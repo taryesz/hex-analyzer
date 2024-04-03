@@ -84,7 +84,7 @@ int** create_board(stack* hexes, const int size) {
         int y = popped->get_position_y();
 
         board[x][y] = popped->get_content();
-        printf(">>> x: %d | y: %d <<<\n", x, y);
+        printf(">>> added: %c | x: %d | y: %d <<<\n", board[x][y], x, y);
 
     }
 
@@ -101,11 +101,71 @@ int** create_board(stack* hexes, const int size) {
 
 }
 
+// this function returns the counted board size
 int get_board_size(int number_of_hexes) {
     return (int) sqrt(number_of_hexes);
 }
 
+bool traverse_board(int** board, bool** visited, int x, int y, int size, int opposite_player) {
 
+    if (x >= 0 && x < size && y >= 0 && y < size) printf(">>> CURRENT: %c <<<\n", board[x][y]);
+    else printf(">>> OUT <<<\n");
+
+    if (x < 0 || x >= size || y < 0 || y >= size || visited[x][y] || board[x][y] != blue_pawn_symbol) {
+        printf("out of bounds. (%d, %d)\n", x, y);
+        return false;
+    }
+
+    if (y == size - 1) {
+        printf("connected! (%d, %d)\n", x, y);
+        return true;
+    }
+
+    visited[x][y] = true;
+    printf("visited node: %c - (%d, %d)\n", board[x][y], x, y);
+
+//    for (int i = 0; i < size; i++) {
+//        for (int j = 0; j < size; j++) {
+//            printf("%d ", visited[i][j]);
+//        }
+//        printf("\n");
+//    }
+
+    // return (dfs(i + 1, j) or dfs(i - 1, j) or dfs(i, j + 1) or dfs(i, j - 1))
+
+    return (traverse_board(board, visited, x + 1, y, size, opposite_player) ||
+            traverse_board(board, visited, x - 1, y, size, opposite_player) ||
+            traverse_board(board, visited, x, y + 1, size, opposite_player) ||
+            traverse_board(board, visited, x, y - 1, size, opposite_player));
+
+}
+
+bool check_is_game_over(int** board, const int size) {
+
+    // Create an array of booleans - visited / unvisited
+    bool** visited = new bool*[size];
+    for (int i = 0; i < size; ++i) {
+        visited[i] = new bool[size];
+        for (int j = 0; j < size; ++j) {
+            visited[i][j] = false;
+//            printf("%d ", visited[i][j]);
+        }
+//        printf("\n");
+    }
+
+    printf("size: %d\n", size);
+    for (int i = 0; i < size; i++) {
+        printf("symbol: %c\n", board[i][0]);
+        if (board[i][0] == blue_pawn_symbol && traverse_board(board, visited, i, 0, size, red_pawn_symbol)) {
+            return true;
+        }
+    }
+
+    return false;
+
+}
+
+// this function compares the input letters with the defined queries and executes one when detected
 void parse_query(stack* hexes, int symbol, int* query_id, int* symbol_id, const int* number_of_hexes, const int* red_pawns_counter, const int* blue_pawns_counter, bool* finished_board_parsing) {
 
     if (compare_queries(symbol, query_id, symbol_id)) {
@@ -134,6 +194,8 @@ void parse_query(stack* hexes, int symbol, int* query_id, int* symbol_id, const 
 
                 // create an array representing the board
                 int **board = create_board(hexes, size);
+                (check_is_game_over(board, size)) ? printf("YES\n") : printf("NO\n");
+
 
                 // free memory
 //                for (int i = 0; i < size; ++i) {
