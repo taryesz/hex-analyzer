@@ -10,33 +10,32 @@ bool parse_hex(stack* hexes, int* position_x, int* position_y, int* last_positio
     // if there is no right neighbor left
     if (*hexes_in_line_counter == *hexes_in_line) {
 
+        // move to the next level
         ++(*level);
 
-        // TODO: NEW
+        // if the middle of the board was found, the board will now shrink in size to the bottom
         if (*middle_found_flag) {
 
-            printf("modified: %d, %d | level: %d | total hexes: %d | hexes count: %d\n", *position_x, *position_y, *level, *hexes_in_line, *hexes_in_line_counter);
-
-//            *position_x = hexes->get_head()->get_position_x() - 1;
-//            *position_y = hexes->get_head()->get_position_y() + 2;
-
-            // TODO: change 'hexes_in_line' to 'level'
+            // update the coords [ according to a discovered by me formula ]
             *position_x = *level - hexes->get_head()->get_position_x();
             *position_y = *level - hexes->get_head()->get_position_y() - 1;
 
+            // since the board is shrinking, there will be fewer and fewer hexes over time
             --(*hexes_in_line);
+
+            // reset the hex counter
             *hexes_in_line_counter = 0;
 
         }
-        else {
 
-            printf("classic: %d, %d | level: %d | total hexes: %d | hexes count: %d\n", *position_x, *position_y, *level, *hexes_in_line, *hexes_in_line_counter);
+        // if the board is still broadening ...
+        else {
 
             // reset the coords, i.e. move one line deeper into the board and move to the very left node
             *position_x = 0;
             *position_y = ++(*last_position_y);
 
-            // reset the level counter
+            // reset the hex counter
             *hexes_in_line_counter = 0;
 
             // increment the variable: each level has one more hex than the previous level
@@ -49,8 +48,8 @@ bool parse_hex(stack* hexes, int* position_x, int* position_y, int* last_positio
     // if there is a right neighbor
     else {
 
-        printf("classic: %d, %d | level: %d | total hexes: %d | hexes count: %d\n", *position_x, *position_y, *level, *hexes_in_line, *hexes_in_line_counter);
-
+        // if the first symbol from the row is being parsed, the program has to save its Y-coord
+        // this is because the movement in the array is performed diagonally
         if (*hexes_in_line_counter == 0) *last_position_y = *position_y;
 
         // update the coordinates

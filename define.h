@@ -2,6 +2,8 @@
 #define STRING_TERMINATOR '\n'
 #define PAWNS_MAX_DIFFERENCE 1
 #define UNDEFINED (-1)
+#define OFFSET_FROM_BOARD_EDGE 1
+#define NUMBER_OF_PLAYERS 2
 
 
 enum visible_ascii_range {
@@ -18,10 +20,13 @@ enum capital_letters_ascii_range {
 enum board {
     hex_detection_symbol = '<',
     hex_finish_detection_symbol = '>',
-    red_pawn_symbol = 'r',
-    blue_pawn_symbol = 'b',
     default_symbol = '.',
     ignore_symbol = '-'
+};
+
+enum player {
+    red_pawn_symbol = 'r',
+    blue_pawn_symbol = 'b',
 };
 
 enum query {

@@ -38,7 +38,8 @@ void launch_parser(stack* hexes, stack* middle_board_symbols, int *number_of_hex
 
             if (symbol == ignore_symbol) {
 
-                // TODO: NEW
+                // TODO: THIS IS A PART OF MIDDLE-BOARD DETECTOR
+                // TODO: USE IT IN A SEPARATE FUNCTION
                 if (middle_board_symbols->get_head() && !(*middle_found_flag)) {
                     int content = middle_board_symbols->get_head()->get_content();
                     if ((content == hex_finish_detection_symbol || content == ignore_symbol) && middle_board_symbols->count() < 3) {
@@ -47,16 +48,13 @@ void launch_parser(stack* hexes, stack* middle_board_symbols, int *number_of_hex
                     else middle_board_symbols->clear();
                 }
 
-                // if head == '>' or head == '-' :
-                //      push(-)
-
             }
 
             // if the symbol is a '<', one more hex was found, which means the size is getting bigger
             else if (symbol == hex_detection_symbol) {
 
-                middle_board_symbols->print();
-                // TODO: NEW
+                // TODO: THIS IS A PART OF MIDDLE-BOARD DETECTOR
+                // TODO: USE IT IN A SEPARATE FUNCTION
                 if (middle_board_symbols->get_head() && !(*middle_found_flag)) {
                     int content = middle_board_symbols->get_head()->get_content();
                     if (content == ignore_symbol) {
@@ -67,9 +65,7 @@ void launch_parser(stack* hexes, stack* middle_board_symbols, int *number_of_hex
                                     content = middle_board_symbols->get_head()->get_next()->get_next()->get_content();
                                     if (content == hex_finish_detection_symbol) {
                                         middle_board_symbols->clear();
-                                        printf("here\n");
                                         *middle_found_flag = true;
-                                        // TODO: FIX THE PROBLEM : WHY ISN'T THE FLAG TOGGLING?
                                     }
                                     else middle_board_symbols->clear();
                                 }
@@ -81,10 +77,6 @@ void launch_parser(stack* hexes, stack* middle_board_symbols, int *number_of_hex
                     }
                     else middle_board_symbols->clear();
                 }
-
-                // if head == '-' and next == '-' and next.next == '>' :
-                //      clear stack
-                //      middle_board_flag == true
 
                 // if the parsing of a board is finished, reset the variables for the next one
                 if (*finished_board_parsing) {
@@ -100,7 +92,8 @@ void launch_parser(stack* hexes, stack* middle_board_symbols, int *number_of_hex
             else if (symbol == hex_finish_detection_symbol) {
                 check_if_hex_empty(hexes, position_x, position_y, last_position_y, hexes_in_line_counter, hexes_in_line, level, empty_hexes_counter, pawn_detected, middle_found_flag);
 
-                // TODO: NEW
+                // TODO: THIS IS A PART OF MIDDLE-BOARD DETECTOR
+                // TODO: USE IT IN A SEPARATE FUNCTION
                 if (!(*middle_found_flag)) {
                     if (middle_board_symbols->get_head() == nullptr) {
                         middle_board_symbols->push(hex_finish_detection_symbol, UNDEFINED, UNDEFINED);
@@ -111,8 +104,6 @@ void launch_parser(stack* hexes, stack* middle_board_symbols, int *number_of_hex
                     else middle_board_symbols->clear();
                 }
 
-                // if head != '-' :
-                    // push(>)
             }
 
             // if the symbol is a 'r', add the red pawn to the stack
