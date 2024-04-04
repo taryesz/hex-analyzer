@@ -10,17 +10,23 @@ int main() {
     // create a stack to store the board hexes and their coords
     auto* hexes = new stack();
 
+    // TODO: NEW
+    auto* middle_board_symbols = new stack();
+    bool middle_found_flag = false;
+
     // create and initiate variables that will store a hex's position coords
     int position_x = 0;
     int position_y = 0;
+    int last_position_y = 0;
 
     // create and initiate a variable that will help the program know when to "reset" the coords
     // i.e. when the last hex in the row is parsed, the program needs to "jump" all the way to the left
     // and one level lower
-    int level = 1;
+    int hexes_in_line = 1;
+    int level = 0;
 
     // create and initiate a variable that will count until the final element of the level is reached
-    int level_counter = 0;
+    int hexes_in_line_counter = 0;
 
     // create and initiate a flag that will tell the program whether to add a '.' to the stack, or a pawn
     bool pawn_detected = false;
@@ -51,7 +57,7 @@ int main() {
 
     /* ---------------------------------------------------------------------------------------------------------- */
 
-    launch_parser(hexes, &number_of_hexes, &red_pawns_counter, &blue_pawns_counter, &empty_hexes_counter, &query_id, &symbol_id, &level_counter, &level, &position_x, &position_y, &finished_board_parsing, &pawn_detected);
+    launch_parser(hexes, middle_board_symbols, &number_of_hexes, &red_pawns_counter, &blue_pawns_counter, &empty_hexes_counter, &query_id, &symbol_id, &hexes_in_line_counter, &hexes_in_line, &level, &position_x, &position_y, &last_position_y, &finished_board_parsing, &pawn_detected, &middle_found_flag);
 
     return 0;
 

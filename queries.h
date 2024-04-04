@@ -106,17 +106,18 @@ int get_board_size(int number_of_hexes) {
     return (int) sqrt(number_of_hexes);
 }
 
-bool traverse_board(int** board, bool** visited, int x, int y, int size, int opposite_player) {
+// this function looks for connections between board edges
+bool traverse_board(int** board, bool** visited, int x, int y, int size, int current_player, int opposite_player) {
 
     if (x >= 0 && x < size && y >= 0 && y < size) printf(">>> CURRENT: %c <<<\n", board[x][y]);
     else printf(">>> OUT <<<\n");
 
-    if (x < 0 || x >= size || y < 0 || y >= size || visited[x][y] || board[x][y] != blue_pawn_symbol) {
+    if (x < 0 || x >= size || y < 0 || y >= size || visited[x][y] || board[x][y] != current_player) {
         printf("out of bounds. (%d, %d)\n", x, y);
         return false;
     }
 
-    if (y == size - 1) {
+    if ((current_player == blue_pawn_symbol && y == size - 1) || (current_player == red_pawn_symbol && x == size - 1)) {
         printf("connected! (%d, %d)\n", x, y);
         return true;
     }
@@ -124,39 +125,43 @@ bool traverse_board(int** board, bool** visited, int x, int y, int size, int opp
     visited[x][y] = true;
     printf("visited node: %c - (%d, %d)\n", board[x][y], x, y);
 
-//    for (int i = 0; i < size; i++) {
-//        for (int j = 0; j < size; j++) {
-//            printf("%d ", visited[i][j]);
-//        }
-//        printf("\n");
-//    }
-
-    // return (dfs(i + 1, j) or dfs(i - 1, j) or dfs(i, j + 1) or dfs(i, j - 1))
-
-    return (traverse_board(board, visited, x + 1, y, size, opposite_player) ||
-            traverse_board(board, visited, x - 1, y, size, opposite_player) ||
-            traverse_board(board, visited, x, y + 1, size, opposite_player) ||
-            traverse_board(board, visited, x, y - 1, size, opposite_player));
+    return (traverse_board(board, visited, x + 1, y, size, current_player, opposite_player) ||
+            traverse_board(board, visited, x - 1, y, size, current_player, opposite_player) ||
+            traverse_board(board, visited, x, y + 1, size, current_player, opposite_player) ||
+            traverse_board(board, visited, x, y - 1, size, current_player, opposite_player));
 
 }
 
-bool check_is_game_over(int** board, const int size) {
+bool check_is_game_over(int** board, const int size, bool* winner) {
 
     // Create an array of booleans - visited / unvisited
     bool** visited = new bool*[size];
+
     for (int i = 0; i < size; ++i) {
         visited[i] = new bool[size];
         for (int j = 0; j < size; ++j) {
             visited[i][j] = false;
-//            printf("%d ", visited[i][j]);
         }
-//        printf("\n");
     }
 
-    printf("size: %d\n", size);
+    for (int i = 0; i < size; i++) {
+        printf("symbol: %c\n", board[0][i]);
+        if (board[0][i] == red_pawn_symbol && traverse_board(board, visited, 0, i, size, red_pawn_symbol, blue_pawn_symbol)) {
+            *winner = true;
+            return true;
+        }
+    }
+
+    for (int i = 0; i < size; ++i) {
+        for (int j = 0; j < size; ++j) {
+            visited[i][j] = false;
+        }
+    }
+
     for (int i = 0; i < size; i++) {
         printf("symbol: %c\n", board[i][0]);
-        if (board[i][0] == blue_pawn_symbol && traverse_board(board, visited, i, 0, size, red_pawn_symbol)) {
+        if (board[i][0] == blue_pawn_symbol && traverse_board(board, visited, i, 0, size, blue_pawn_symbol, red_pawn_symbol)) {
+            *winner = false;
             return true;
         }
     }
@@ -194,7 +199,15 @@ void parse_query(stack* hexes, int symbol, int* query_id, int* symbol_id, const 
 
                 // create an array representing the board
                 int **board = create_board(hexes, size);
-                (check_is_game_over(board, size)) ? printf("YES\n") : printf("NO\n");
+                bool winner;
+
+                if (check_is_game_over(board, size, &winner)) {
+                    printf("YES ");
+                    (winner) ? printf("RED\n") : printf("BLUE\n");
+                }
+                else printf("NO\n");
+
+//                (check_is_game_over(board, size, &winner)) ? printf("YES ") : printf("NO\n");
 
 
                 // free memory

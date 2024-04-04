@@ -1,29 +1,57 @@
 // this function adds a hex to the stack
-bool parse_hex(stack* hexes, int* position_x, int* position_y, int* level_counter, int* level, int* n_pawns_counter, int content) {
+bool parse_hex(stack* hexes, int* position_x, int* position_y, int* last_position_y, int* hexes_in_line_counter, int* hexes_in_line, int* level, int* n_pawns_counter, int content, const bool* middle_found_flag) {
 
     // add the hex
     hexes->push(content, *position_x, *position_y);
 
     // move to the next hex in the row (right neighbor)
-    ++(*level_counter);
+    ++(*hexes_in_line_counter);
 
     // if there is no right neighbor left
-    if (*level_counter == *level) {
+    if (*hexes_in_line_counter == *hexes_in_line) {
 
-        // reset the coords, i.e. move one line deeper into the board and move to the very left node
-        *position_x = 0;
-        ++(*position_y);
-
-        // reset the level counter
-        *level_counter = 0;
-
-        // increment the variable: each level has one more hex than the previous level
         ++(*level);
+
+        // TODO: NEW
+        if (*middle_found_flag) {
+
+            printf("modified: %d, %d | level: %d | total hexes: %d | hexes count: %d\n", *position_x, *position_y, *level, *hexes_in_line, *hexes_in_line_counter);
+
+//            *position_x = hexes->get_head()->get_position_x() - 1;
+//            *position_y = hexes->get_head()->get_position_y() + 2;
+
+            // TODO: change 'hexes_in_line' to 'level'
+            *position_x = *level - hexes->get_head()->get_position_x();
+            *position_y = *level - hexes->get_head()->get_position_y() - 1;
+
+            --(*hexes_in_line);
+            *hexes_in_line_counter = 0;
+
+        }
+        else {
+
+            printf("classic: %d, %d | level: %d | total hexes: %d | hexes count: %d\n", *position_x, *position_y, *level, *hexes_in_line, *hexes_in_line_counter);
+
+            // reset the coords, i.e. move one line deeper into the board and move to the very left node
+            *position_x = 0;
+            *position_y = ++(*last_position_y);
+
+            // reset the level counter
+            *hexes_in_line_counter = 0;
+
+            // increment the variable: each level has one more hex than the previous level
+            ++(*hexes_in_line);
+
+        }
 
     }
 
     // if there is a right neighbor
     else {
+
+        printf("classic: %d, %d | level: %d | total hexes: %d | hexes count: %d\n", *position_x, *position_y, *level, *hexes_in_line, *hexes_in_line_counter);
+
+        if (*hexes_in_line_counter == 0) *last_position_y = *position_y;
 
         // update the coordinates
         ++(*position_x);
@@ -43,10 +71,10 @@ bool parse_hex(stack* hexes, int* position_x, int* position_y, int* level_counte
 }
 
 // this function checks if the parsed hex node is empty
-void check_if_hex_empty(stack* hexes, int* position_x, int* position_y, int* level_counter, int* level, int* empty_hexes_counter, bool* pawn_detected) {
+void check_if_hex_empty(stack* hexes, int* position_x, int* position_y, int* last_position_y, int* hexes_in_line_counter, int* hexes_in_line, int* level, int* empty_hexes_counter, bool* pawn_detected, bool* middle_found_flag) {
 
     // if no pawn was detected in the node, add a '.'
-    if (!(*pawn_detected)) *pawn_detected = parse_hex(hexes, position_x, position_y, level_counter, level, empty_hexes_counter, default_symbol);
+    if (!(*pawn_detected)) *pawn_detected = parse_hex(hexes, position_x, position_y, last_position_y, hexes_in_line_counter, hexes_in_line, level, empty_hexes_counter, default_symbol, middle_found_flag);
 
     // otherwise, a pawn was already inserted, don't do anything
     else *pawn_detected = false;

@@ -110,4 +110,44 @@ public:
 
     }
 
+    void print() {
+
+        // get the head of the stack
+        node* iterator = this->head;
+
+        // while there are elements on the stack
+        while (iterator != nullptr) {
+
+            printf("%c", iterator->get_content());
+
+            // get the next symbol from the stack
+            iterator = iterator->get_next();
+
+        }
+
+        // print the new line char for the sake of aesthetic look of the output
+        printf("\n");
+
+    }
+
+    int count() {
+
+        node* iterator = this->head;
+        int counter = 0;
+
+        // while there are elements on the stack
+        while (iterator != nullptr) {
+
+            ++counter;
+
+            // get the next symbol from the stack
+            iterator = iterator->get_next();
+
+        }
+
+        // print the new line char for the sake of aesthetic look of the output
+        return counter;
+
+    }
+
 };
