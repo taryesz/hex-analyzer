@@ -134,10 +134,12 @@ bool traverse_board(int** board, bool** visited, int x, int y, int size, int cur
     visited[x][y] = true;
 
     // check the current symbol's neighbors
-    return (traverse_board(board, visited, x + 1, y, size, current_player, opposite_player) ||
-            traverse_board(board, visited, x - 1, y, size, current_player, opposite_player) ||
+    return (traverse_board(board, visited, x, y - 1, size, current_player, opposite_player) ||
             traverse_board(board, visited, x, y + 1, size, current_player, opposite_player) ||
-            traverse_board(board, visited, x, y - 1, size, current_player, opposite_player));
+            traverse_board(board, visited, x + 1, y, size, current_player, opposite_player) ||
+            traverse_board(board, visited, x - 1, y, size, current_player, opposite_player) ||
+            traverse_board(board, visited, x + 1, y + 1, size, current_player, opposite_player) ||
+            traverse_board(board, visited, x - 1, y - 1, size, current_player, opposite_player));
 
 }
 
@@ -228,6 +230,17 @@ bool check_is_game_over(int** board, const int size, bool* winner) {
 
 }
 
+bool check_is_board_correct(int blue_pawns_counter, int red_pawns_counter, int number_of_hexes) {
+
+    if (blue_pawns_counter > red_pawns_counter) return false;
+    else if (number_of_hexes == 1 && (!blue_pawns_counter && red_pawns_counter) || (!red_pawns_counter && blue_pawns_counter)) return false;
+    else {
+        if (abs(blue_pawns_counter - red_pawns_counter) > PAWNS_MAX_DIFFERENCE) return false;
+        else return true;
+    }
+
+}
+
 // this function compares the input letters with the defined queries and executes one when detected
 void parse_query(stack* hexes, int symbol, int* query_id, int* symbol_id, const int* number_of_hexes, const int* red_pawns_counter, const int* blue_pawns_counter, bool* finished_board_parsing) {
 
@@ -248,15 +261,16 @@ void parse_query(stack* hexes, int symbol, int* query_id, int* symbol_id, const 
                 break;
             }
             case is_board_correct: {
-                if (*blue_pawns_counter > *red_pawns_counter) printf("NO\n");
-                else if (*number_of_hexes == 1 && (!(*blue_pawns_counter) && *red_pawns_counter) || (!(*red_pawns_counter) && *blue_pawns_counter)) printf("NO\n");
-                else {
-                    if (abs(*blue_pawns_counter - *red_pawns_counter) > PAWNS_MAX_DIFFERENCE) printf("NO\n");
-                    else printf("YES\n");
-                }
+                if (check_is_board_correct(*blue_pawns_counter, *red_pawns_counter, *number_of_hexes)) printf("YES\n");
+                else printf("NO\n");
                 break;
             }
             case is_game_over: {
+
+                if (!check_is_board_correct(*blue_pawns_counter, *red_pawns_counter, *number_of_hexes)) {
+                    printf("NO\n\n");
+                    break;
+                }
 
                 const int size = get_board_size(*number_of_hexes);
 
@@ -264,11 +278,28 @@ void parse_query(stack* hexes, int symbol, int* query_id, int* symbol_id, const 
                 int **board = create_board(hexes, size);
                 bool winner;
 
+//                printf("\n>>> ===================== <<<\n\n");
+//                for (int i = 0; i < size; i++) {
+//                    for (int j = size - 1; j >= 0; j--) {
+//                        printf("%c ", board[i][j]);
+//                    }
+//                    printf("\n");
+//                }
+//                printf("\n");
+
+//                for (int i = 0; i < size; i++) {
+//                    for (int j = 0; j < size; j++) {
+//                        printf("%c ", board[i][j]);
+//                    }
+//                    printf("\n");
+//                }
+//                printf("\n");
+
                 if (check_is_game_over(board, size, &winner)) {
                     printf("YES ");
-                    (winner) ? printf("RED\n") : printf("BLUE\n");
+                    (winner) ? printf("RED\n\n") : printf("BLUE\n\n");
                 }
-                else printf("NO\n");
+                else printf("NO\n\n");
 
                 // free memory
                 for (int i = 0; i < size; ++i) delete [] board[i];
