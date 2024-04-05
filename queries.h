@@ -233,7 +233,8 @@ bool check_is_game_over(int** board, const int size, bool* winner) {
 bool check_is_board_correct(int blue_pawns_counter, int red_pawns_counter, int number_of_hexes) {
 
     if (blue_pawns_counter > red_pawns_counter) return false;
-    else if (number_of_hexes == 1 && (!blue_pawns_counter && red_pawns_counter) || (!red_pawns_counter && blue_pawns_counter)) return false;
+    else if (number_of_hexes == 1 && (!red_pawns_counter && blue_pawns_counter)) return false;
+    else if (number_of_hexes == 1 && (!blue_pawns_counter && red_pawns_counter)) return true;
     else {
         if (abs(blue_pawns_counter - red_pawns_counter) > PAWNS_MAX_DIFFERENCE) return false;
         else return true;
