@@ -14,20 +14,8 @@ public:
         tail = nullptr;
     }
 
-    void set_head(node* new_head) {
-        head = new_head;
-    }
-
-    void set_tail(node* new_tail) {
-        tail = new_tail;
-    }
-
     [[nodiscard]] node* get_head() const {
         return head;
-    }
-
-    [[nodiscard]] node* get_tail() const {
-        return tail;
     }
 
     void push(int content, int position_x, int position_y) {
@@ -107,26 +95,6 @@ public:
         // after deleting all elements from the stack, make sure the key nodes are set to null
         head = nullptr;
         tail = nullptr;
-
-    }
-
-    void print() {
-
-        // get the head of the stack
-        node* iterator = this->head;
-
-        // while there are elements on the stack
-        while (iterator != nullptr) {
-
-            printf("%c", iterator->get_content());
-
-            // get the next symbol from the stack
-            iterator = iterator->get_next();
-
-        }
-
-        // print the new line char for the sake of aesthetic look of the output
-        printf("\n");
 
     }
 

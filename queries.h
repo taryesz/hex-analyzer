@@ -1,3 +1,5 @@
+#include "array.h"
+
 // this function will store and return a query
 const char* get_query(int query_id) {
 
@@ -50,9 +52,13 @@ bool compare_queries(int symbol, int* query_id, int* symbol_id) {
             ++(*symbol_id);
 
             // if the next symbol is \n, the query is found
-            if (*symbol_id == STRING_TERMINATOR) return true;
+            if (*symbol_id == STRING_TERMINATOR) {
+                delete [] queries; // free memory
+                return true;
+            }
 
             // exit the function after updating identifiers
+            delete [] queries; // free memory
             return false;
 
         }
@@ -63,6 +69,7 @@ bool compare_queries(int symbol, int* query_id, int* symbol_id) {
 
     }
 
+    delete [] queries; // free memory
     return false;
 
 }
@@ -71,10 +78,7 @@ bool compare_queries(int symbol, int* query_id, int* symbol_id) {
 int** create_board(stack* hexes, const int size) {
 
     // create a dynamic size x size 2D-array of integers
-    int** board = new int*[size];
-    for (int i = 0; i < size; ++i) {
-        board[i] = new int[size];
-    }
+    int** board = create_array<int>(size);
 
     // get the head of the stack
     node* iterator = hexes->get_head();
@@ -94,6 +98,8 @@ int** create_board(stack* hexes, const int size) {
 
         // place the popped's pawn value into the respective spot in the array
         board[x][y] = popped->get_content();
+
+        delete popped; // free memory
 
     }
 
@@ -143,33 +149,6 @@ bool traverse_board(int** board, bool** visited, int x, int y, int size, int cur
 
 }
 
-// this function will create a 2D-array used to store info about visited elements
-bool** create_visited(const int size) {
-    bool** visited = new bool*[size];
-    for (int i = 0; i < size; ++i) {
-        visited[i] = new bool[size];
-        for (int j = 0; j < size; ++j) {
-            visited[i][j] = false;
-        }
-    }
-    return visited;
-}
-
-// this function will reset the values of the 2D-array used to store info about visited elements to false
-void reset_visited(bool** visited, const int size) {
-    for (int i = 0; i < size; ++i) {
-        for (int j = 0; j < size; ++j) {
-            visited[i][j] = false;
-        }
-    }
-}
-
-// this function will delete the 2D-array used to store info about visited elements
-void free_visited(bool** visited, const int size) {
-    for (int i = 0; i < size; ++i) delete [] visited[i];
-    delete [] visited;
-}
-
 // this function executes IS_GAME_OVER query, i.e. checks if one of the player has connected their edges with pawns
 bool check_is_game_over(int** board, const int size, bool* winner) {
 
@@ -181,7 +160,7 @@ bool check_is_game_over(int** board, const int size, bool* winner) {
     const int edge_symbol_mark = 0;
 
     // create a dynamic size x size 2D-array of false's to keep track of visited elements
-    bool** visited = create_visited(size);
+    bool** visited = create_array<bool>(size, true, false);
 
     // launch the board traversal looking for 'r' connecting the opposite board's sides
     for (int i = 0; i < size; i++) {
@@ -193,7 +172,7 @@ bool check_is_game_over(int** board, const int size, bool* winner) {
             *winner = true;
 
             // free memory
-            free_visited(visited, size);
+            free_array(visited, size);
 
             // IS_GAME_OVER confirms to be over
             return true;
@@ -202,7 +181,7 @@ bool check_is_game_over(int** board, const int size, bool* winner) {
     }
 
     // reset the values inside the "visited" array for the next traversal launch
-    reset_visited(visited, size);
+    reset_array(visited, size, false);
 
     // launch the board traversal looking for 'b' connecting the opposite board's sides
     for (int i = 0; i < size; i++) {
@@ -214,7 +193,7 @@ bool check_is_game_over(int** board, const int size, bool* winner) {
             *winner = false;
 
             // free memory
-            free_visited(visited, size);
+            free_array(visited, size);
 
             // IS_GAME_OVER confirms to be over
             return true;
@@ -223,21 +202,34 @@ bool check_is_game_over(int** board, const int size, bool* winner) {
     }
 
     // free memory used by the "visited" array
-    free_visited(visited, size);
+    free_array(visited, size);
 
     // IS_GAME_OVER is not over, no connections found
     return false;
 
 }
 
+// this function checks if the amount of blue and red pawns is possible
 bool check_is_board_correct(int blue_pawns_counter, int red_pawns_counter, int number_of_hexes) {
 
+    // if there are more blues than reds, it's not possible so false
     if (blue_pawns_counter > red_pawns_counter) return false;
+
+    // if there is only one hex on the board, and it's a blue one, can't be because the game starts the red one
     else if (number_of_hexes == 1 && (!red_pawns_counter && blue_pawns_counter)) return false;
+
+    // if there is only one hex on the board, and it's a red one, it's a possible scenario
     else if (number_of_hexes == 1 && (!blue_pawns_counter && red_pawns_counter)) return true;
+
+    // if none of the above ...
     else {
+
+        // if the difference in the amount of blue and red pawns is greater than one, can't be
         if (abs(blue_pawns_counter - red_pawns_counter) > PAWNS_MAX_DIFFERENCE) return false;
+
+        // otherwise, everything's fine
         else return true;
+
     }
 
 }
@@ -279,23 +271,6 @@ void parse_query(stack* hexes, int symbol, int* query_id, int* symbol_id, const 
                 int **board = create_board(hexes, size);
                 bool winner;
 
-//                printf("\n>>> ===================== <<<\n\n");
-//                for (int i = 0; i < size; i++) {
-//                    for (int j = size - 1; j >= 0; j--) {
-//                        printf("%c ", board[i][j]);
-//                    }
-//                    printf("\n");
-//                }
-//                printf("\n");
-
-//                for (int i = 0; i < size; i++) {
-//                    for (int j = 0; j < size; j++) {
-//                        printf("%c ", board[i][j]);
-//                    }
-//                    printf("\n");
-//                }
-//                printf("\n");
-
                 if (check_is_game_over(board, size, &winner)) {
                     printf("YES ");
                     (winner) ? printf("RED\n\n") : printf("BLUE\n\n");
@@ -303,21 +278,14 @@ void parse_query(stack* hexes, int symbol, int* query_id, int* symbol_id, const 
                 else printf("NO\n\n");
 
                 // free memory
-                for (int i = 0; i < size; ++i) delete [] board[i];
-                delete [] board;
-
+                free_array(board, size);
                 break;
             }
-//                        case is_board_possible:
-//                            break;
-//                        case can_red_win_in_n_move_with_naive_opponent:
-//                            break;
-//                        case can_red_win_in_n_move_with_perfect_opponent:
-//                            break;
             default:
                 break;
         }
 
+        hexes->clear(); // free memory
         *query_id = 0;
         *symbol_id = 0;
 

@@ -3,8 +3,6 @@
 #define PAWNS_MAX_DIFFERENCE 1
 #define UNDEFINED (-1)
 #define OFFSET_FROM_BOARD_EDGE 1
-#define NUMBER_OF_PLAYERS 2
-
 
 enum visible_ascii_range {
     first_visible_ascii = 32,
