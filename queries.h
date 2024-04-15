@@ -12,6 +12,7 @@ const char* get_query(int query_id) {
         case can_red_win_in_n_move_with_naive_opponent: return "CAN_RED_WIN_IN_N_MOVE_WITH_NAIVE_OPPONENT";
         case can_red_win_in_n_move_with_perfect_opponent: return "CAN_RED_WIN_IN_N_MOVE_WITH_PERFECT_OPPONENT";
         default: return "";
+
     }
 
 }
@@ -55,17 +56,20 @@ bool compare_queries(int symbol, int* query_id, int* symbol_id) {
             if (*symbol_id == STRING_TERMINATOR) {
                 delete [] queries; // free memory
                 return true;
+
             }
 
             // exit the function after updating identifiers
             delete [] queries; // free memory
             return false;
 
+
         }
 
-        // if there are difference in names, move to the next function, keeping what the program has already compared
-        // i.e. without resetting 'symbol_id'
+            // if there are difference in names, move to the next function, keeping what the program has already compared
+            // i.e. without resetting 'symbol_id'
         else ++(*query_id);
+
 
     }
 
@@ -133,7 +137,10 @@ bool traverse_board(int** board, bool** visited, int x, int y, int size, int cur
     // [ for the blue player the program checks the left and right sides, so it's interested in X-axis ]
     // [ for the red player the program checks the top and bottom sides, so it's interested in Y-axis ]
     // the axes are inverted because the array representing the board is mirrored
-    if ((current_player == blue_pawn_symbol && y == max_coord) || (current_player == red_pawn_symbol && x == max_coord)) return true;
+    if ((current_player == blue_pawn_symbol && y == max_coord) || (current_player == red_pawn_symbol && x == max_coord)) {
+        visited[x][y] = true;
+        return true;
+    }
 
     // if the current symbol is representing this same player, but it's not at the opposite edge,
     // it's somewhere in the middle then, so mark it as visited
@@ -150,7 +157,7 @@ bool traverse_board(int** board, bool** visited, int x, int y, int size, int cur
 }
 
 // this function executes IS_GAME_OVER query, i.e. checks if one of the player has connected their edges with pawns
-bool check_is_game_over(int** board, const int size, bool* winner) {
+bool check_is_game_over(int** board, const int size, bool* winner, bool** visited_blue, bool** visited_red) {
 
     // create a variable that will store the permanent index of an element
     // *** along the edge of the board ***
@@ -159,50 +166,37 @@ bool check_is_game_over(int** board, const int size, bool* winner) {
     // *** the axes are mirrored because the array is too ***
     const int edge_symbol_mark = 0;
 
-    // create a dynamic size x size 2D-array of false's to keep track of visited elements
-    bool** visited = create_array<bool>(size, true, false);
-
     // launch the board traversal looking for 'r' connecting the opposite board's sides
     for (int i = 0; i < size; i++) {
 
         // if an 'r' was found along the edge and the connection to the opposite edge is found too ...
-        if (board[edge_symbol_mark][i] == red_pawn_symbol && traverse_board(board, visited, edge_symbol_mark, i, size, red_pawn_symbol, blue_pawn_symbol)) {
+        if (board[edge_symbol_mark][i] == red_pawn_symbol && traverse_board(board, visited_red, edge_symbol_mark, i, size, red_pawn_symbol, blue_pawn_symbol)) {
 
             // the red player becomes the winner [ true ]
             *winner = true;
-
-            // free memory
-            free_array(visited, size);
 
             // IS_GAME_OVER confirms to be over
             return true;
 
         }
-    }
 
-    // reset the values inside the "visited" array for the next traversal launch
-    reset_array(visited, size, false);
+    }
 
     // launch the board traversal looking for 'b' connecting the opposite board's sides
     for (int i = 0; i < size; i++) {
 
         // if an 'b' was found along the edge and the connection to the opposite edge is found too ...
-        if (board[i][edge_symbol_mark] == blue_pawn_symbol && traverse_board(board, visited, i, edge_symbol_mark, size, blue_pawn_symbol, red_pawn_symbol)) {
+        if (board[i][edge_symbol_mark] == blue_pawn_symbol && traverse_board(board, visited_blue, i, edge_symbol_mark, size, blue_pawn_symbol, red_pawn_symbol)) {
 
             // the blue player becomes the winner [ false ]
             *winner = false;
-
-            // free memory
-            free_array(visited, size);
 
             // IS_GAME_OVER confirms to be over
             return true;
 
         }
-    }
 
-    // free memory used by the "visited" array
-    free_array(visited, size);
+    }
 
     // IS_GAME_OVER is not over, no connections found
     return false;
@@ -247,11 +241,13 @@ void parse_query(stack* hexes, int symbol, int* query_id, int* symbol_id, const 
             case board_size: {
                 printf("%d\n", get_board_size(*number_of_hexes));
                 break;
+
             }
             case pawns_number: {
                 const int final_pawns_number = *red_pawns_counter + *blue_pawns_counter;
                 printf("%d\n", final_pawns_number);
                 break;
+
             }
             case is_board_correct: {
                 if (check_is_board_correct(*blue_pawns_counter, *red_pawns_counter, *number_of_hexes)) printf("YES\n");
@@ -261,7 +257,7 @@ void parse_query(stack* hexes, int symbol, int* query_id, int* symbol_id, const 
             case is_game_over: {
 
                 if (!check_is_board_correct(*blue_pawns_counter, *red_pawns_counter, *number_of_hexes)) {
-                    printf("NO\n\n");
+                    printf("NO\n");
                     break;
                 }
 
@@ -271,18 +267,135 @@ void parse_query(stack* hexes, int symbol, int* query_id, int* symbol_id, const 
                 int **board = create_board(hexes, size);
                 bool winner;
 
-                if (check_is_game_over(board, size, &winner)) {
+                // create a dynamic size x size 2D-array of false's to keep track of visited elements
+                bool** visited_blue = create_array<bool>(size, true, false);
+                bool** visited_red = create_array<bool>(size, true, false);
+
+                if (check_is_game_over(board, size, &winner, visited_blue, visited_red)) {
                     printf("YES ");
-                    (winner) ? printf("RED\n\n") : printf("BLUE\n\n");
-                }
-                else printf("NO\n\n");
+                    (winner) ? printf("RED\n") : printf("BLUE\n");
+
+                } else printf("NO\n");
 
                 // free memory
                 free_array(board, size);
+                free_array(visited_blue, size);
+                free_array(visited_red, size);
                 break;
+
+            }
+            case is_board_possible: {
+
+                if (!check_is_board_correct(*blue_pawns_counter, *red_pawns_counter, *number_of_hexes)) {
+                    printf("NO\n");
+                    break;
+                }
+
+                const int size = get_board_size(*number_of_hexes);
+
+                // create an array representing the board
+                int **board = create_board(hexes, size);
+                bool winner;
+                bool is_board_possible = false;
+
+                // create a dynamic size x size 2D-array of false's to keep track of visited elements
+                bool** visited_blue = create_array<bool>(size, true, false);
+                bool** visited_red = create_array<bool>(size, true, false);
+
+                // needed to initiate the "winner" variable
+                bool is_game_over = check_is_game_over(board, size, &winner, visited_blue, visited_red);
+
+                if (size != 2) {
+
+                    if (is_game_over) {
+
+                        if (winner) {
+
+                            for (int i = 0; i < size; i++) {
+                                for (int j = 0; j < size; j++) {
+                                    if (visited_red[i][j]) {
+                                        board[i][j] = default_symbol;
+                                        bool **visited_blue_copy = create_array<bool>(size, true, false);
+                                        bool **visited_red_copy = create_array<bool>(size, true, false);
+
+                                        if (!check_is_game_over(board, size, &winner, visited_blue_copy,visited_red_copy)) {
+                                            is_board_possible = true;
+                                            i = size;
+                                            break;
+                                        }
+                                        else {
+                                            if (is_board_possible) {
+                                                is_board_possible = false;
+                                                free_array(visited_blue_copy, size);
+                                                free_array(visited_red_copy, size);
+                                                i = size;
+                                                break;
+                                            }
+                                            board[i][j] = red_pawn_symbol;
+                                        }
+
+                                        free_array(visited_blue_copy, size);
+                                        free_array(visited_red_copy, size);
+                                    }
+                                }
+                            }
+
+                            if (*red_pawns_counter <= *blue_pawns_counter) is_board_possible = false;
+
+                        }
+                        else {
+
+                            for (int i = 0; i < size; i++) {
+                                for (int j = 0; j < size; j++) {
+                                    if (visited_blue[i][j]) {
+                                        board[i][j] = default_symbol;
+                                        bool **visited_blue_copy = create_array<bool>(size, true, false);
+                                        bool **visited_red_copy = create_array<bool>(size, true, false);
+
+                                        if (!check_is_game_over(board, size, &winner, visited_blue_copy,visited_red_copy)) {
+                                            if (is_board_possible) is_board_possible = false;
+                                            else is_board_possible = true;
+                                            i = size;
+                                            break;
+                                        }
+                                        else {
+                                            if (is_board_possible) {
+                                                is_board_possible = false;
+                                                free_array(visited_blue_copy, size);
+                                                free_array(visited_red_copy, size);
+                                                i = size;
+                                                break;
+                                            }
+                                            board[i][j] = blue_pawn_symbol;
+                                        }
+
+                                        free_array(visited_blue_copy, size);
+                                        free_array(visited_red_copy, size);
+                                    }
+                                }
+                            }
+
+                            if (*blue_pawns_counter != *red_pawns_counter) is_board_possible = false;
+
+                        }
+
+                    } else is_board_possible = true;
+                }
+                else is_board_possible = true;
+
+                if (is_board_possible) printf("YES\n");
+                else printf("NO\n");
+
+                // free memory
+                free_array(board, size);
+                free_array(visited_red, size);
+                free_array(visited_blue, size);
+                break;
+
             }
             default:
                 break;
+
         }
 
         hexes->clear(); // free memory
