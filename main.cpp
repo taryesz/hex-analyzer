@@ -1,5 +1,4 @@
 #include <iostream>
-#include <fstream>
 #include "stack.h"
 #include "pawns.h"
 #include "queries.h"

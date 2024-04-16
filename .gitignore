@@ -3,5 +3,3 @@ CMakeLists.txt
 cmake-build-debug/
 stack/
 .DS_Store
-tests.txt
-tests/

@@ -3,6 +3,8 @@
 #define PAWNS_MAX_DIFFERENCE 1
 #define UNDEFINED (-1)
 #define OFFSET_FROM_BOARD_EDGE 1
+#define NEIGHBOR_DISTANCE 1
+#define OUT_OF_BOUNDS_COORDINATE 0
 
 enum visible_ascii_range {
     first_visible_ascii = 32,
