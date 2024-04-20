@@ -18,6 +18,38 @@ public:
         return head;
     }
 
+    void put(int content, int position_x, int position_y) {
+
+        auto* hex = new node();
+
+        hex->set_content(content);
+        hex->set_position_x(position_x);
+        hex->set_position_y(position_y);
+
+        // if the stack is empty ...
+        if (head == nullptr) {
+
+            // set both head & tail as the same node
+            head = hex;
+            tail = hex;
+
+        }
+
+        // if the stack is not empty ...
+        else {
+
+             // connect a previous node to the new node
+             this->tail->set_next(hex);
+
+             // update the tail
+             this->tail = hex;
+
+        }
+
+
+
+    }
+
     void push(int content, int position_x, int position_y) {
 
         auto* hex = new node();
@@ -115,6 +147,47 @@ public:
 
         // print the new line char for the sake of aesthetic look of the output
         return counter;
+
+    }
+
+    void print() {
+
+        node* iterator = this->head;
+
+        while (iterator != nullptr) {
+            printf("%c ", iterator->get_content());
+            iterator = iterator->get_next();
+        }
+
+        printf("\n");
+
+    }
+
+    auto* copy() {
+
+        node* iterator = this->head;
+
+        auto* new_stack = new stack();
+
+        while (iterator != nullptr) {
+            new_stack->push(iterator->get_content(), iterator->get_position_x(), iterator->get_position_y());
+            iterator = iterator->get_next();
+        }
+
+        return new_stack;
+
+    }
+
+    void replace(node* place, int replacement) const {
+
+        node* iterator = this->get_head();
+        while (iterator != nullptr) {
+            if (iterator->get_position_x() == place->get_position_x() && iterator->get_position_y() == place->get_position_y()) {
+                iterator->set_content(replacement);
+                break;
+            }
+            iterator = iterator->get_next();
+        }
 
     }
 

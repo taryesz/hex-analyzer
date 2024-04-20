@@ -5,6 +5,9 @@
 #include "is-board-correct.h"
 #include "is-game-over.h"
 #include "is-board-possible.h"
+//#include "can-player-win-in-n-moves.h"
+#include "test.h"
+
 
 // this function will store and return a query
 const char* get_query(int query_id) {
@@ -15,10 +18,11 @@ const char* get_query(int query_id) {
         case is_board_correct: return "IS_BOARD_CORRECT";
         case is_game_over: return "IS_GAME_OVER";
         case is_board_possible: return "IS_BOARD_POSSIBLE";
-        case can_red_win_in_n_move_with_naive_opponent: return "CAN_RED_WIN_IN_N_MOVE_WITH_NAIVE_OPPONENT";
-        case can_red_win_in_n_move_with_perfect_opponent: return "CAN_RED_WIN_IN_N_MOVE_WITH_PERFECT_OPPONENT";
+        case can_red_win_in_1_move_with_naive_opponent: return "CAN_RED_WIN_IN_1_MOVE_WITH_NAIVE_OPPONENT";
+        case can_blue_win_in_1_move_with_naive_opponent: return "CAN_BLUE_WIN_IN_1_MOVE_WITH_NAIVE_OPPONENT";
+        case can_red_win_in_2_moves_with_naive_opponent: return "CAN_RED_WIN_IN_2_MOVES_WITH_NAIVE_OPPONENT";
+        case can_blue_win_in_2_moves_with_naive_opponent: return "CAN_BLUE_WIN_IN_2_MOVES_WITH_NAIVE_OPPONENT";
         default: return "";
-
     }
 
 }
@@ -72,8 +76,8 @@ bool compare_queries(int symbol, int* query_id, int* symbol_id) {
 
         }
 
-            // if there are difference in names, move to the next function, keeping what the program has already compared
-            // i.e. without resetting 'symbol_id'
+        // if there are difference in names, move to the next function, keeping what the program has already compared
+        // i.e. without resetting 'symbol_id'
         else ++(*query_id);
 
 
@@ -119,6 +123,56 @@ void parse_query(stack* hexes, int symbol, int* query_id, int* symbol_id, const 
             }
             case is_board_possible: {
                 check_is_board_possible(hexes, blue_pawns_counter, red_pawns_counter, number_of_hexes, true);
+                break;
+            }
+            case can_red_win_in_1_move_with_naive_opponent: {
+                int tree_depth = 1;
+                check_can_player_win_in_n_moves(hexes, (int) *blue_pawns_counter, (int) *red_pawns_counter, (int) *number_of_hexes, tree_depth, true);
+
+                // IMPLEMENTATION PSEUDOCODE
+
+                /*
+                 *
+                 * LIMIT THE FUNCTION EXECUTION TO 2 (4) LEVELS OF GENERATED BOARDS
+                 *
+                 * (1) generate all possible moves (coords)
+                 * for move in moves:
+                 *
+                 *      generate new board:
+                 *          place the new pawn of the current player (should be the opposite of the one place most recently)
+                 *
+                 *      check if the game is over:
+                 *          if the REQUESTED player == winner:
+                 *              print YES
+                 *              return
+                 *
+                 *      swap players:
+                 *          current player = opposite player
+                 *
+                 *      goto (1) // recursion
+                 *
+                 * EXAMPLE:
+                 *
+                 * >>> CAN_RED_WIN_IN_1_MOVE_WITH_NAIVE_OPPONENT
+                 *      2 levels of generated boards (tree)
+                 *      check if red wins anywhere
+                 *
+                 * >>> CAN_RED_WIN_IN_1_MOVE_WITH_PERFECT_OPPONENT
+                 *      2 levels of generated boards (tree)
+                 *      perform the state assessment (the opponent also chooses the best moves for themselves) ???
+                 *
+                 *
+                 *
+                 *
+                 *
+                 *
+                 */
+
+
+
+
+
+                // check_can_player_win_in_n_moves(hexes, blue_pawns_counter, red_pawns_counter, number_of_hexes, red_pawn_symbol, 1, true);
                 break;
             }
             default:

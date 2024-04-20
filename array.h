@@ -50,11 +50,7 @@ template <typename ArrayType>
 void print_array(ArrayType** array, const int size) {
     for (int i = 0; i < size; i++) {
         for (int j = 0; j < size; j++) {
-//            if (typeid(ArrayType) == typeid(bool())) {
-                if (array[i][j]) printf("* ");
-                else printf(". ");
-//            }
-//            else printf("%c ", array[i][j]);
+            printf("%c ", array[i][j]);
         }
         printf("\n");
     }

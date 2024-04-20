@@ -1,4 +1,4 @@
-#define INPUT_TERMINATOR EOF
+#define INPUT_TERMINATOR '|'
 #define STRING_TERMINATOR '\n'
 #define PAWNS_MAX_DIFFERENCE 1
 #define UNDEFINED (-1)
@@ -35,7 +35,9 @@ enum query {
     is_board_correct,
     is_game_over,
     is_board_possible,
-    can_red_win_in_n_move_with_naive_opponent,
-    can_red_win_in_n_move_with_perfect_opponent,
+    can_red_win_in_1_move_with_naive_opponent,
+    can_blue_win_in_1_move_with_naive_opponent,
+    can_red_win_in_2_moves_with_naive_opponent,
+    can_blue_win_in_2_moves_with_naive_opponent,
     queries_quantity
 };
