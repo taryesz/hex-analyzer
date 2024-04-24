@@ -9,7 +9,11 @@ bool check_for_alternative_paths(int** board, bool** visited, const int size, bo
                 bool **visited_blue_copy = create_array<bool>(size, true, false);
                 bool **visited_red_copy = create_array<bool>(size, true, false);
 
-                if (!find_connection(board, size, winner, visited_blue_copy,visited_red_copy)) return true;
+                if (!find_connection(board, size, winner, visited_blue_copy,visited_red_copy)) {
+                    free_array(visited_blue_copy, size);
+                    free_array(visited_red_copy, size);
+                    return true;
+                }
                 else board[i][j] = current_player;
 
                 free_array(visited_blue_copy, size);
@@ -69,7 +73,7 @@ bool check_is_board_possible(stack* hexes, const int* blue_pawns_counter, const 
 
         }
 
-            // if the winner is the blue player ...
+        // if the winner is the blue player ...
         else {
 
             // check if the blue player has only one possible "winning path"
@@ -92,9 +96,7 @@ bool check_is_board_possible(stack* hexes, const int* blue_pawns_counter, const 
 
     // if the result is positive, ( and if the program needs it printed, print it ) return true
     if (is_board_possible) {
-        if (print_the_result) {
-            printf("YES\n");
-        }
+        if (print_the_result) printf("YES\n");
         return true;
     }
 

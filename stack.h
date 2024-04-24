@@ -14,7 +14,7 @@ public:
         tail = nullptr;
     }
 
-    [[nodiscard]] node* get_head() const {
+    node* get_head() const {
         return head;
     }
 

@@ -18,7 +18,7 @@ public:
         this->next = nullptr;
     }
 
-    [[nodiscard]] int get_content() const {
+    int get_content() const {
         return content;
     }
 
@@ -26,7 +26,7 @@ public:
         content = value;
     }
 
-    [[nodiscard]] int get_position_x() const {
+    int get_position_x() const {
         return position_x;
     }
 
@@ -34,7 +34,7 @@ public:
         position_x = value;
     }
 
-    [[nodiscard]] int get_position_y() const {
+    int get_position_y() const {
         return position_y;
     }
 
@@ -42,7 +42,7 @@ public:
         position_y = value;
     }
 
-    [[nodiscard]] node* get_next() const {
+    node* get_next() const {
         return next;
     }
 

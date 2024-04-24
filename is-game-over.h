@@ -88,7 +88,7 @@ bool find_connection(int** board, const int size, bool* winner, bool** visited_b
 }
 
 // this function creates all necessary variables for the board traversal and returns the result of it
-bool check_is_game_over(stack* hexes, const int* blue_pawns_counter, const int* red_pawns_counter, const int* number_of_hexes, bool print_the_result = false) {
+bool check_is_game_over(stack* hexes, const int* blue_pawns_counter, const int* red_pawns_counter, const int* number_of_hexes, bool* winner, bool print_the_result = false) {
 
     // if the board is not correct, nothing to check, just return NO
     if (!check_is_board_correct(*blue_pawns_counter, *red_pawns_counter, *number_of_hexes)) {
@@ -103,7 +103,7 @@ bool check_is_game_over(stack* hexes, const int* blue_pawns_counter, const int* 
     int **board = create_board(hexes, size);
 
     // create a flag that will indicate the winner (if any)
-    bool winner;
+    // bool winner;
 
     // create a dynamic size x size 2D-array of false's to keep track of visited elements:
 
@@ -114,7 +114,7 @@ bool check_is_game_over(stack* hexes, const int* blue_pawns_counter, const int* 
     bool** visited_red = create_array<bool>(size, true, false);
 
     // if the game was finished, return YES and the information about the winner
-    bool result = find_connection(board, size, &winner, visited_blue, visited_red);
+    bool result = find_connection(board, size, winner, visited_blue, visited_red);
 
     // free memory
     free_array(board, size);
@@ -125,7 +125,7 @@ bool check_is_game_over(stack* hexes, const int* blue_pawns_counter, const int* 
     if (result) {
         if (print_the_result) {
             printf("YES ");
-            (winner) ? printf("RED\n") : printf("BLUE\n"); // print who won the game
+            (*winner) ? printf("RED\n") : printf("BLUE\n"); // print who won the game
         }
         // printf("CHECK: found a connecting path! \n\n");
         return true;

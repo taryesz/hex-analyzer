@@ -1,9 +1,11 @@
 #include <iostream>
+#include <math.h>
 #include "stack.h"
 #include "pawns.h"
 #include "queries.h"
 #include "input.h"
-
+//#include <fstream>
+//#include <regex>
 
 int main() {
 
@@ -64,6 +66,29 @@ int main() {
     /* ---------------------------------------------------------------------------------------------------------- */
 
     launch_parser(hexes, middle_board_symbols, &number_of_hexes, &red_pawns_counter, &blue_pawns_counter, &empty_hexes_counter, &query_id, &symbol_id, &hexes_in_line_counter, &hexes_in_line, &level, &position_x, &position_y, &last_position_y, &finished_board_parsing, &pawn_detected, &middle_found_flag);
+
+//    int line_number = 1570; // Specify the line number here
+//    std::fstream file("input.txt"); // Specify the input file name here
+//
+//    std::string line;
+//    int current_line_number = 1;
+//
+//    while (std::getline(file, line)) {
+//
+//        std::regex pattern("[^A-Z0-9_]");
+//
+//        if (!std::regex_search(line, pattern)) {
+//            current_line_number++;
+//        }
+//
+//        if (current_line_number == line_number) {
+//            file << "HERE\n";
+//            break;
+//        }
+//
+//    }
+//
+//    file.close();
 
     // free memory
     hexes->clear();

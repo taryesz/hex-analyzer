@@ -45,7 +45,9 @@ void launch_parser(stack* hexes, stack* middle_board_symbols, int *number_of_hex
                     if ((content == hex_finish_detection_symbol || content == ignore_symbol) && middle_board_symbols->count() < 3) {
                         middle_board_symbols->push(ignore_symbol, UNDEFINED, UNDEFINED);
                     }
-                    else middle_board_symbols->clear();
+                    else {
+                        middle_board_symbols->clear();
+                    }
                 }
 
             }
@@ -117,7 +119,7 @@ void launch_parser(stack* hexes, stack* middle_board_symbols, int *number_of_hex
             }
 
             // if the symbol is a capital letter, the program is about to start parsing a query
-            else if ((symbol >= first_capital_letter_ascii && symbol <= final_capital_letter_ascii) || symbol == underscore) {
+            else if ((symbol >= first_capital_letter_ascii && symbol <= final_capital_letter_ascii) || symbol == underscore || (symbol >= first_digit_ascii && symbol <= final_digit_ascii)) {
                 parse_query(hexes, symbol, query_id, symbol_id, number_of_hexes, red_pawns_counter, blue_pawns_counter, finished_board_parsing);
             }
 
