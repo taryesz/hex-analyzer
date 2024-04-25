@@ -46,13 +46,18 @@ enum query {
     is_board_correct,
     is_game_over,
     is_board_possible,
+
     can_red_win_in_1_move_with_naive_opponent,
     can_red_win_in_2_moves_with_naive_opponent,
+
+    can_red_win_in_1_move_with_perfect_opponent,
+    can_red_win_in_2_moves_with_perfect_opponent,
+
     can_blue_win_in_1_move_with_naive_opponent,
     can_blue_win_in_2_moves_with_naive_opponent,
-    can_red_win_in_1_move_with_perfect_opponent,
+
     can_blue_win_in_1_move_with_perfect_opponent,
-    can_red_win_in_2_moves_with_perfect_opponent,
     can_blue_win_in_2_moves_with_perfect_opponent,
+
     queries_quantity
 };

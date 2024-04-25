@@ -159,7 +159,7 @@ int minmax(stack* hexes, int** board, const int size, int* red_pawns_counter, in
         }
         else {
 //            printf(">>> GAME OVER - WE LOST\n\n");
-             return NEGATIVE_RESULT;
+            return NEGATIVE_RESULT;
         }
     }
 
@@ -171,28 +171,7 @@ int minmax(stack* hexes, int** board, const int size, int* red_pawns_counter, in
 
     --tree_depth;
 
-    // bool main_player_turn = check_maximizing(main_player, current_player);
-
     return launch_board_generator(hexes, board, size, red_pawns_counter, blue_pawns_counter, number_of_hexes, tree_depth, main_player, perfect_opponent, number_of_moves, placed_red_pawns_counter, placed_blue_pawns_counter, alpha, beta);
-
-    // if it's the main player's turn to place a pawn ...
-//    if (main_player_turn) {
-//        // printf(">>> MAIN player's (%d) turn to place a pawn\n\n", current_player);
-//        return launch_board_generator(hexes, board, size, red_pawns_counter, blue_pawns_counter, number_of_hexes, tree_depth, main_player, perfect_opponent, number_of_moves, placed_red_pawns_counter, placed_blue_pawns_counter, alpha, beta);
-//    }
-//
-//    // if it's the opponent player's turn to place a pawn ...
-//    else {
-//        if (perfect_opponent) {
-//            // printf(">>> PERFECT OPPONENT player's (%d) turn to place a pawn\n\n", current_player);
-//            return launch_board_generator(hexes, board, size, red_pawns_counter, blue_pawns_counter, number_of_hexes, tree_depth, main_player, perfect_opponent, number_of_moves, placed_red_pawns_counter, placed_blue_pawns_counter, alpha, beta);
-//        }
-//        else {
-//            // printf(">>> NAIVE OPPONENT player's (%d) turn to place a pawn\n\n", current_player);
-//            // main_player_turn = true;
-//            return launch_board_generator(hexes, board, size, red_pawns_counter, blue_pawns_counter, number_of_hexes, tree_depth, main_player, perfect_opponent, number_of_moves, placed_red_pawns_counter, placed_blue_pawns_counter, alpha, beta);
-//        }
-//    }
 
 }
 
@@ -209,7 +188,7 @@ bool launch_board_generator(stack* hexes, int** board, const int size, int* red_
     // get the current player (the one that should now place their pawn)
     bool current_player = determine_current_player(*red_pawns_counter, *blue_pawns_counter);
 
-     int result = false;
+    int result = false;
 
     // for each pair of possible coordinates ...
     for (int i = 0; i < number_of_empty_hexes; i++) {
@@ -220,9 +199,9 @@ bool launch_board_generator(stack* hexes, int** board, const int size, int* red_
         // place the current player's pawn onto a board on a generated position
         place_pawn(hexes, board, possible_movement_coordinates_pair, red_pawns_counter, blue_pawns_counter, current_player, placed_red_pawns_counter, placed_blue_pawns_counter);
 
-        printf("THE NEW BOARD: \n\n");
-        print_array(board, size);
-        printf("------------------------------- \n\n");
+//        printf("THE NEW BOARD: \n\n");
+//        print_array(board, size);
+//        printf("------------------------------- \n\n");
 
         // check is there is a winning path
         result = minmax(hexes, board, size, red_pawns_counter, blue_pawns_counter, number_of_hexes, tree_depth, main_player, perfect_opponent, number_of_moves, placed_red_pawns_counter, placed_blue_pawns_counter, alpha, beta);
@@ -297,30 +276,128 @@ bool check_can_player_win_in_n_moves(stack* hexes, int blue_pawns_counter, int r
     // get the size of the board
     const int size = get_board_size(number_of_hexes);
 
-    // create an array representing the board
-    int **board = create_board(hexes, size);
-
-    // the tree depth has to be multiplied by two because there are *two* players placing the pawns
-    tree_depth *= 2;
-
-    // bool main_player_turn = check_maximizing(main_player, determine_current_player(red_pawns_counter, blue_pawns_counter));
-
-    int placed_red_pawns_counter = 0, placed_blue_pawns_counter = 0;
-
-    int alpha = ABSOLUTE_ALPHA;
-    int beta = ABSOLUTE_BETA;
-
-    bool result = launch_board_generator(hexes, board, size, &red_pawns_counter, &blue_pawns_counter, &number_of_hexes, tree_depth, main_player, perfect_opponent, number_of_moves, &placed_red_pawns_counter, &placed_blue_pawns_counter, alpha, beta);
-
-    free_array(board, size);
-
-    if (result) {
-        if (print_the_result) printf("YES\n");
-        return true;
-    }
-    else {
+    if ((main_player == red_pawn_symbol && red_pawns_counter + tree_depth < size) || (main_player == blue_pawn_symbol && blue_pawns_counter + tree_depth < size)) {
         if (print_the_result) printf("NO\n");
         return false;
     }
+
+    // create an array representing the board
+    int **board = create_board(hexes, size);
+
+    const int number_of_empty_hexes = number_of_hexes - (red_pawns_counter + blue_pawns_counter);
+
+    // create a stack consisting of all coordinates of empty hexes on the board
+    auto* possible_movement_coordinates = create_possible_movement_coordinates(board, size);
+
+    // get the current player (the one that should now place their pawn)
+    bool current_player = determine_current_player(red_pawns_counter, blue_pawns_counter);
+
+    int placed_red_pawns_counter = 0, placed_blue_pawns_counter = 0;
+
+    int movements = 3; // RR or BB
+    if (check_maximizing(main_player, current_player)) movements = 4; // RB or BR
+
+    if (tree_depth == 1) movements -= 2; // for one step
+
+    node* possible_movement_coordinates_pair = possible_movement_coordinates->get_head();
+    node* possible_movement_coordinates_pair2 = possible_movement_coordinates->get_head();
+
+    // current_player = (main_player == red_pawn_symbol);
+
+    if (movements <= number_of_empty_hexes) {
+
+        for (int i = 0; i < number_of_empty_hexes; i++) {
+
+            place_pawn(hexes, board, possible_movement_coordinates_pair, &red_pawns_counter, &blue_pawns_counter, current_player, &placed_red_pawns_counter, &placed_blue_pawns_counter);
+
+            if (check_maximizing(main_player, current_player)) {
+
+                current_player = determine_current_player(red_pawns_counter, blue_pawns_counter);
+
+                for (int j = 0; j < number_of_empty_hexes - 1; j++) {
+
+                    if (possible_movement_coordinates_pair->get_position_x() == possible_movement_coordinates_pair2->get_position_x() && possible_movement_coordinates_pair->get_position_y() == possible_movement_coordinates_pair2->get_position_y()) {
+                        if (possible_movement_coordinates_pair2->get_next() != nullptr) possible_movement_coordinates_pair2 = possible_movement_coordinates_pair2->get_next();
+                    }
+
+                    place_pawn(hexes, board, possible_movement_coordinates_pair2, &red_pawns_counter, &blue_pawns_counter, current_player, &placed_red_pawns_counter, &placed_blue_pawns_counter);
+
+                    if (check_is_game_over(hexes, &blue_pawns_counter, &red_pawns_counter, &number_of_hexes, &winner)) {
+                        // main won:
+                        if ((winner && main_player == red_pawn_symbol) || (!winner && main_player == blue_pawn_symbol)) {
+                            if (print_the_result) printf("YES\n");
+                            remove_pawn(hexes, board, possible_movement_coordinates_pair, &red_pawns_counter, &blue_pawns_counter, &placed_red_pawns_counter, &placed_blue_pawns_counter);
+                            remove_pawn(hexes, board, possible_movement_coordinates_pair2, &red_pawns_counter, &blue_pawns_counter, &placed_red_pawns_counter, &placed_blue_pawns_counter);
+                            possible_movement_coordinates->clear();
+                            delete possible_movement_coordinates;
+                            free_array(board, size);
+                            return true;
+                        }
+                        // opponent won ...
+                    }
+
+                    remove_pawn(hexes, board, possible_movement_coordinates_pair2, &red_pawns_counter, &blue_pawns_counter, &placed_red_pawns_counter, &placed_blue_pawns_counter);
+                    if (possible_movement_coordinates_pair2->get_next() != nullptr) possible_movement_coordinates_pair2 = possible_movement_coordinates_pair2->get_next();
+
+                }
+
+                remove_pawn(hexes, board, possible_movement_coordinates_pair, &red_pawns_counter, &blue_pawns_counter, &placed_red_pawns_counter, &placed_blue_pawns_counter);
+                current_player = determine_current_player(red_pawns_counter, blue_pawns_counter);
+                continue;
+
+            }
+            else {
+
+                if (check_is_game_over(hexes, &blue_pawns_counter, &red_pawns_counter, &number_of_hexes, &winner)) {
+                    // main won:
+                    if ((winner && main_player == red_pawn_symbol) || (!winner && main_player == blue_pawn_symbol)) {
+                        if (print_the_result) printf("YES\n");
+                        remove_pawn(hexes, board, possible_movement_coordinates_pair, &red_pawns_counter, &blue_pawns_counter, &placed_red_pawns_counter, &placed_blue_pawns_counter);
+                        possible_movement_coordinates->clear();
+                        delete possible_movement_coordinates;
+                        free_array(board, size);
+                        return true;
+                    }
+                    // opponent won ...
+                }
+
+                remove_pawn(hexes, board, possible_movement_coordinates_pair, &red_pawns_counter, &blue_pawns_counter, &placed_red_pawns_counter, &placed_blue_pawns_counter);
+                if (possible_movement_coordinates_pair->get_next() != nullptr) possible_movement_coordinates_pair = possible_movement_coordinates_pair->get_next();
+
+            }
+
+            // place_pawn(current)
+
+            // if maximizing == true:                               ::::*** if RB or BR ***::::
+            //      update_current_player()                         RB -> blue moves = red moves = 1
+            //      for number_of_empty_hexes - 1 :                 BR -> blue moves = red moves = 1
+            //          place_pawn(current)                         Total moves = 2
+            //          is_game_over() ? return true
+            //          remove_pawn(current)
+            //          get_next_possible_coord_2()
+            //      remove_pawn(current)
+            //      update_current_player()
+            //      continue
+            //
+            // else:                                                 ::::*** if RR or BB ***::::
+            //      is_game_over() ? return true                     RR -> blue moves = 0, red moves = 1
+            //      remove_pawn(current)                             BB -> blue moves = 1, red moves = 0
+            //      get_next_possible_coord()                        Total moves = 1
+
+        }
+
+    }
+
+    // REMOVE PAWN
+
+    // printf(">>> pawns counter test: red = %d, blue = %d\n", red_pawns_counter, blue_pawns_counter);
+
+    possible_movement_coordinates->clear();
+    delete possible_movement_coordinates;
+
+    free_array(board, size);
+
+    if (print_the_result) printf("NO\n");
+    return false;
 
 }

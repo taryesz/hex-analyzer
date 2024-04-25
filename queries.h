@@ -6,6 +6,7 @@
 #include "is-game-over.h"
 #include "is-board-possible.h"
 #include "can-player-win-in-n-moves.h"
+//#include "test.h"
 
 
 // this function will store and return a query
@@ -17,14 +18,19 @@ const char* get_query(int query_id) {
         case is_board_correct: return "IS_BOARD_CORRECT";
         case is_game_over: return "IS_GAME_OVER";
         case is_board_possible: return "IS_BOARD_POSSIBLE";
+
         case can_red_win_in_1_move_with_naive_opponent: return "CAN_RED_WIN_IN_1_MOVE_WITH_NAIVE_OPPONENT";
-        case can_blue_win_in_1_move_with_naive_opponent: return "CAN_BLUE_WIN_IN_1_MOVE_WITH_NAIVE_OPPONENT";
         case can_red_win_in_2_moves_with_naive_opponent: return "CAN_RED_WIN_IN_2_MOVES_WITH_NAIVE_OPPONENT";
+
+        case can_blue_win_in_1_move_with_naive_opponent: return "CAN_BLUE_WIN_IN_1_MOVE_WITH_NAIVE_OPPONENT";
         case can_blue_win_in_2_moves_with_naive_opponent: return "CAN_BLUE_WIN_IN_2_MOVES_WITH_NAIVE_OPPONENT";
+
         case can_red_win_in_1_move_with_perfect_opponent: return "CAN_RED_WIN_IN_1_MOVE_WITH_PERFECT_OPPONENT";
-        case can_blue_win_in_1_move_with_perfect_opponent: return "CAN_BLUE_WIN_IN_1_MOVE_WITH_PERFECT_OPPONENT";
         case can_red_win_in_2_moves_with_perfect_opponent: return "CAN_RED_WIN_IN_2_MOVES_WITH_PERFECT_OPPONENT";
+
+        case can_blue_win_in_1_move_with_perfect_opponent: return "CAN_BLUE_WIN_IN_1_MOVE_WITH_PERFECT_OPPONENT";
         case can_blue_win_in_2_moves_with_perfect_opponent: return "CAN_BLUE_WIN_IN_2_MOVES_WITH_PERFECT_OPPONENT";
+
         default: return "";
     }
 
@@ -127,6 +133,7 @@ void parse_query(stack* hexes, int symbol, int* query_id, int* symbol_id, const 
                 break;
             }
             case can_red_win_in_1_move_with_naive_opponent: {
+//                printf("\n1\n");
                 int tree_depth = 1;
                 int number_of_moves = 1;
                 int main_player = red_pawn_symbol;
@@ -134,13 +141,15 @@ void parse_query(stack* hexes, int symbol, int* query_id, int* symbol_id, const 
                 break;
             }
             case can_red_win_in_2_moves_with_naive_opponent: {
+//                printf("\n2\n");
                 int tree_depth = 2;
                 int number_of_moves = 2;
                 int main_player = red_pawn_symbol;
-                check_can_player_win_in_n_moves(hexes, (int) *blue_pawns_counter, (int) *red_pawns_counter, (int) *number_of_hexes, tree_depth, main_player, number_of_moves, false, true);
+                //check_can_player_win_in_n_moves(hexes, (int) *blue_pawns_counter, (int) *red_pawns_counter, (int) *number_of_hexes, tree_depth, main_player, number_of_moves, false, true);
                 break;
             }
             case can_blue_win_in_1_move_with_naive_opponent: {
+//                printf("\n3\n");
                 int tree_depth = 1;
                 int number_of_moves = 1;
                 int main_player = blue_pawn_symbol;
@@ -148,10 +157,43 @@ void parse_query(stack* hexes, int symbol, int* query_id, int* symbol_id, const 
                 break;
             }
             case can_blue_win_in_2_moves_with_naive_opponent: {
+//                printf("\n4\n");
                 int tree_depth = 2;
                 int number_of_moves = 2;
                 int main_player = blue_pawn_symbol;
-                check_can_player_win_in_n_moves(hexes, (int) *blue_pawns_counter, (int) *red_pawns_counter, (int) *number_of_hexes, tree_depth, main_player, number_of_moves, false, true);
+                //check_can_player_win_in_n_moves(hexes, (int) *blue_pawns_counter, (int) *red_pawns_counter, (int) *number_of_hexes, tree_depth, main_player, number_of_moves, false, true);
+                break;
+            }
+            case can_red_win_in_1_move_with_perfect_opponent: {
+//                printf("\n5\n");
+                int tree_depth = 1;
+                int number_of_moves = 1;
+                int main_player = red_pawn_symbol;
+                check_can_player_win_in_n_moves(hexes, (int) *blue_pawns_counter, (int) *red_pawns_counter, (int) *number_of_hexes, tree_depth, main_player, number_of_moves, true, true);
+                break;
+            }
+            case can_red_win_in_2_moves_with_perfect_opponent: {
+//                printf("\n6\n");
+                int tree_depth = 2;
+                int number_of_moves = 2;
+                int main_player = red_pawn_symbol;
+                check_can_player_win_in_n_moves(hexes, (int) *blue_pawns_counter, (int) *red_pawns_counter, (int) *number_of_hexes, tree_depth, main_player, number_of_moves, true, true);
+                break;
+            }
+            case can_blue_win_in_1_move_with_perfect_opponent: {
+//                printf("\n7\n");
+                int tree_depth = 1;
+                int number_of_moves = 1;
+                int main_player = blue_pawn_symbol;
+                check_can_player_win_in_n_moves(hexes, (int) *blue_pawns_counter, (int) *red_pawns_counter, (int) *number_of_hexes, tree_depth, main_player, number_of_moves, true, true);
+                break;
+            }
+            case can_blue_win_in_2_moves_with_perfect_opponent: {
+//                printf("\n8\n");
+                int tree_depth = 2;
+                int number_of_moves = 2;
+                int main_player = blue_pawn_symbol;
+                check_can_player_win_in_n_moves(hexes, (int) *blue_pawns_counter, (int) *red_pawns_counter, (int) *number_of_hexes, tree_depth, main_player, number_of_moves, true, true);
                 break;
             }
             default:
