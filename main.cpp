@@ -8,7 +8,7 @@
 int main() {
 
     // create a stack to store the board hexes and their coords
-    auto* hexes = new stack();
+    int hexes[SIZE][SIZE];
 
     // create a stack to store the board symbols
     // needed to detect when the board is being parsed in its middle
@@ -61,13 +61,14 @@ int main() {
     // create and initiate a flag that will tell the program whether to reset all of the above variables for the next board or not yet
     bool finished_board_parsing = false;
 
+    // create variables that will store the lastly parsed pawn's coords
+    int most_recent_x = 0, most_recent_y = 0;
+
     /* ---------------------------------------------------------------------------------------------------------- */
 
-    launch_parser(hexes, middle_board_symbols, &number_of_hexes, &red_pawns_counter, &blue_pawns_counter, &empty_hexes_counter, &query_id, &symbol_id, &hexes_in_line_counter, &hexes_in_line, &level, &position_x, &position_y, &last_position_y, &finished_board_parsing, &pawn_detected, &middle_found_flag);
+    launch_parser(hexes, middle_board_symbols, &number_of_hexes, &red_pawns_counter, &blue_pawns_counter, &empty_hexes_counter, &query_id, &symbol_id, &hexes_in_line_counter, &hexes_in_line, &level, &position_x, &position_y, &last_position_y, &finished_board_parsing, &pawn_detected, &middle_found_flag, &most_recent_x, &most_recent_y);
 
     // free memory
-    hexes->clear();
-    delete hexes;
     middle_board_symbols->clear();
     delete middle_board_symbols;
 

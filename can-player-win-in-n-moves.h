@@ -1,15 +1,3 @@
-int max(int a, int b) {
-    if (a > b) return a;
-    else if (b > a) return b;
-    else return a;
-}
-
-int min(int a, int b) {
-    if (a < b) return a;
-    else if (b < a) return b;
-    else return a;
-}
-
 // this function determines if the current level of the tree has to return the best or worst result
 bool check_maximizing(int main_player, int current_player) {
 
@@ -24,8 +12,67 @@ bool check_maximizing(int main_player, int current_player) {
 
 }
 
+// this function "virtually" places / removes the opponents pawn
+// "virtually" because we are trying to generate as fewer iterations as possible
+void update_opponent_data(int main_player, int* red_pawns_counter, int* blue_pawns_counter, bool mode = false) {
+
+    // if the flag is set to false, the values will be incremented
+    if (!mode) {
+        if (main_player == red_pawn_symbol) ++(*blue_pawns_counter);
+        else if (main_player == blue_pawn_symbol) ++(*red_pawns_counter);
+    }
+
+    // otherwise, decremented
+    else {
+        if (main_player == red_pawn_symbol) --(*blue_pawns_counter);
+        else if (main_player == blue_pawn_symbol) --(*red_pawns_counter);
+    }
+
+}
+
+// this function double-checks if the player used the correct amount of pawns to win the game
+bool check_if_can_win_in_less_moves(stack* used_coords, int hexes[SIZE][SIZE], const int size, const int* blue_pawns_counter, const int* red_pawns_counter, const int* number_of_hexes) {
+
+    // get the first pair of used coordinates
+    node* iterator = used_coords->get_head();
+
+    while (iterator != nullptr) {
+
+        // iterate through the game board ...
+        for (int k = 0; k < size; k++) {
+            for (int l = 0; l < size; l++) {
+
+                // if the hex with the specified coords is found ...
+                if (k == iterator->get_position_x() && l == iterator->get_position_y()) {
+
+                    // save its content
+                    int content = hexes[k][l];
+
+                    // make this hex empty
+                    hexes[k][l] = empty_hex_symbol;
+
+                    bool winner;
+
+                    // if the player can still win even without one of their hexes, it means that there is
+                    // an "overflow" of moves, e.g. 1 move wanted, 2 made
+                    if (check_is_game_over(hexes, blue_pawns_counter, red_pawns_counter, number_of_hexes, &winner)) return false;
+
+                    // otherwise, restore the hex and continue the check
+                    hexes[k][l] = content;
+
+                }
+            }
+        }
+
+        iterator = iterator->get_next();
+    }
+
+    return true;
+
+}
+
 // this function searches for free hexes and saves their coordinates onto the stack
-auto* create_possible_movement_coordinates(int** board, const int size) {
+auto* create_possible_movement_coordinates(int hexes[SIZE][SIZE], const int size) {
 
     // create a new stack
     auto* possible_movement_coordinates = new stack();
@@ -35,7 +82,7 @@ auto* create_possible_movement_coordinates(int** board, const int size) {
         for (int j = 0; j < size; j++) {
 
             // if the hex is empty (neither red, nor blue) ...
-            if (board[i][j] != red_pawn_symbol && board[i][j] != blue_pawn_symbol) {
+            if (hexes[i][j] != red_pawn_symbol && hexes[i][j] != blue_pawn_symbol) {
 
                 // save the coords of it onto the stack
                 possible_movement_coordinates->push(UNDEFINED, i, j);
@@ -61,172 +108,139 @@ bool determine_current_player(int red_pawns_counter, int blue_pawns_counter) {
 }
 
 // this function adds one more pawn to a generated position
-void place_pawn(stack* hexes, int** board, node* possible_movement_coordinates_pair, int* red_pawns_counter, int* blue_pawns_counter, bool current_player, int* placed_red_pawns_counter, int* placed_blue_pawns_counter) {
+void place_pawn(int hexes[SIZE][SIZE], node* possible_movement_coordinates_pair, int* red_pawns_counter, int* blue_pawns_counter, int current_player) {
 
     // get the coords
     int x = possible_movement_coordinates_pair->get_position_x();
     int y = possible_movement_coordinates_pair->get_position_y();
 
     // create a variable that stores the pawn's ascii
-    int pawn;
+    int pawn = UNDEFINED;
 
     // if the current player is red [ true ], the pawn is red
-    if (current_player) {
+    if (current_player == red_pawn_symbol) {
         ++(*red_pawns_counter);
-        ++(*placed_red_pawns_counter);
         pawn = red_pawn_symbol;
     }
 
     // otherwise the pawn is blue
-    else {
+    else if (current_player == blue_pawn_symbol){
         ++(*blue_pawns_counter);
-        ++(*placed_blue_pawns_counter);
         pawn = blue_pawn_symbol;
     }
 
     // place the pawn onto the board
-    board[x][y] = pawn;
-
-    // add the pawn to the stack of pawns
-    node* iterator = hexes->get_head();
-    while (iterator != nullptr) {
-        if (iterator->get_position_x() == x && iterator->get_position_y() == y) {
-            iterator->set_content(pawn);
-            break;
-        }
-        iterator = iterator->get_next();
-    }
+    hexes[x][y] = pawn;
 
 }
 
 // this function removes an added pawn from the board
-void remove_pawn(stack* hexes, int** board, node* possible_movement_coordinates_pair, int* red_pawns_counter, int* blue_pawns_counter, int* placed_red_pawns_counter, int* placed_blue_pawns_counter) {
+void remove_pawn(int hexes[SIZE][SIZE], node* possible_movement_coordinates_pair, int* red_pawns_counter, int* blue_pawns_counter) {
 
     // get the coords
     int x = possible_movement_coordinates_pair->get_position_x();
     int y = possible_movement_coordinates_pair->get_position_y();
 
-    if (board[x][y] == red_pawn_symbol) {
-        --(*red_pawns_counter);
-        --(*placed_red_pawns_counter);
-    }
-    else if (board[x][y] == blue_pawn_symbol) {
-        --(*blue_pawns_counter);
-        --(*placed_blue_pawns_counter);
-    }
+    if (hexes[x][y] == red_pawn_symbol) --(*red_pawns_counter);
+    else if (hexes[x][y] == blue_pawn_symbol) --(*blue_pawns_counter);
 
     // replace the pawn with a dot [ empty ]
-    board[x][y] = empty_hex_symbol;
-
-    // delete the pawn from the stack
-    node* iterator = hexes->get_head();
-    while (iterator != nullptr) {
-        if (iterator->get_position_x() == x && iterator->get_position_y() == y) {
-            iterator->set_content(empty_hex_symbol);
-            break;
-        }
-        iterator = iterator->get_next();
-    }
+    hexes[x][y] = empty_hex_symbol;
 
 }
 
-bool launch_board_generator(stack* hexes, int** board, int size, int* red_pawns_counter, int* blue_pawns_counter, int* number_of_hexes, int tree_depth, int main_player, bool perfect_opponent, int number_of_moves, int* placed_red_pawns_counter, int* placed_blue_pawns_counter, int alpha, int beta);
-
-int minmax(stack* hexes, int** board, const int size, int* red_pawns_counter, int* blue_pawns_counter, int* number_of_hexes, int tree_depth, int main_player, bool perfect_opponent, int number_of_moves, int* placed_red_pawns_counter, int* placed_blue_pawns_counter, int alpha, int beta) {
-
-    bool winner;
-
-    // check if the game is finished ...
-    if (check_is_game_over(hexes, blue_pawns_counter, red_pawns_counter, number_of_hexes, &winner, false)) {
-
-        // if the checked player won ...
-        if ((main_player == red_pawn_symbol && winner) || (main_player == blue_pawn_symbol && !winner)) {
-
-            // check if the amount of placed pawns corresponds to the amount of moves the player is allowed to make
-            if (main_player == red_pawn_symbol) {
-                if (*placed_red_pawns_counter >= number_of_moves) return POSITIVE_RESULT;
-            }
-            else {
-                if (*placed_blue_pawns_counter >= number_of_moves) return POSITIVE_RESULT;
-            }
-
-        }
-
-        // if the opponent has won ...
-        else return NEGATIVE_RESULT;
-
-    }
-
-    // if the maximum tree depth is reached and the game is not over, continue checking other tree nodes
-    if (tree_depth == LAST_TREE_LEVEL) return NEUTRAL_RESULT;
-
-    // get one level deeper
-    --tree_depth;
-
-    // generate new movements for the next player
-    return launch_board_generator(hexes, board, size, red_pawns_counter, blue_pawns_counter, number_of_hexes, tree_depth, main_player, perfect_opponent, number_of_moves, placed_red_pawns_counter, placed_blue_pawns_counter, alpha, beta);
-
-}
-
-// this function generates coordinates, boards, and checks a winner
-bool launch_board_generator(stack* hexes, int** board, const int size, int* red_pawns_counter, int* blue_pawns_counter, int* number_of_hexes, int tree_depth, int main_player, bool perfect_opponent, int number_of_moves, int* placed_red_pawns_counter, int* placed_blue_pawns_counter, int alpha, int beta) {
+// this function generates possible moves, places pawns and checks for a player's victory
+bool bruteforce_traverse(int hexes[SIZE][SIZE], const int size, int* number_of_hexes, int* red_pawns_counter, int* blue_pawns_counter, int tree_depth, int main_player, int number_of_empty_hexes, stack* used_coords) {
 
     // create a stack consisting of all coordinates of empty hexes on the board
-    auto* possible_movement_coordinates = create_possible_movement_coordinates(board, size);
+    auto* possible_movement_coordinates = create_possible_movement_coordinates(hexes, size);
 
-    // calculate the amount of empty hexes (the ones without a pawn)
-    // [ the variable defines how many possibilities there are on each level of the generated tree ]
-    const int number_of_empty_hexes = *number_of_hexes - (*red_pawns_counter + *blue_pawns_counter);
-
-    // get the current player (the one that should now place their pawn)
-    bool current_player = determine_current_player(*red_pawns_counter, *blue_pawns_counter);
-
-    // set the default result of the function
-    int result = NEGATIVE_RESULT;
-
-    // for each pair of possible coordinates ...
+    // iterate through all possibilities
     for (int i = 0; i < number_of_empty_hexes; i++) {
 
         // get a pair of possible coords
         node* possible_movement_coordinates_pair = possible_movement_coordinates->pop();
 
+        // push the pair to the stack to keep track of what coords were used in case of victory
+        used_coords->push(UNDEFINED, possible_movement_coordinates_pair->get_position_x(), possible_movement_coordinates_pair->get_position_y());
+
         // place the current player's pawn onto a board on a generated position
-        place_pawn(hexes, board, possible_movement_coordinates_pair, red_pawns_counter, blue_pawns_counter, current_player, placed_red_pawns_counter, placed_blue_pawns_counter);
+        place_pawn(hexes, possible_movement_coordinates_pair, red_pawns_counter, blue_pawns_counter, main_player);
 
-        // check is there is a winning path
-        result = minmax(hexes, board, size, red_pawns_counter, blue_pawns_counter, number_of_hexes, tree_depth, main_player, perfect_opponent, number_of_moves, placed_red_pawns_counter, placed_blue_pawns_counter, alpha, beta);
+        // if there is only one move to be made by a player ...
+        if (tree_depth == MINIMAL_TREE_DEPTH) {
 
-        // if there is a victory for the checked player ...
-        if (result == POSITIVE_RESULT) {
+            bool winner;
 
-            // clear the board back to the original state
-            remove_pawn(hexes, board, possible_movement_coordinates_pair, red_pawns_counter, blue_pawns_counter, placed_red_pawns_counter, placed_blue_pawns_counter);
+            // if the pawn placement make it possible for a player to win ...
+            if (check_is_game_over(hexes, blue_pawns_counter, red_pawns_counter, number_of_hexes, &winner, false)) {
 
-            possible_movement_coordinates->clear(); // free memory
-            delete possible_movement_coordinates;
-            delete possible_movement_coordinates_pair;
+                // if the player, for whom the traverse is being made, is the one winning ...
+                if ((main_player == red_pawn_symbol && winner) || (main_player == blue_pawn_symbol && !winner)) {
 
-            return true; // immediately exit the function
+                    // clear the board back to the original state by removing a placed pawn
+                    remove_pawn(hexes, possible_movement_coordinates_pair, red_pawns_counter, blue_pawns_counter);
+
+                    delete possible_movement_coordinates_pair; // free memory
+                    possible_movement_coordinates->clear();
+                    delete possible_movement_coordinates;
+
+                    // double-check if the amount of pawns used is correct
+                    bool pawns_check = check_if_can_win_in_less_moves(used_coords, hexes, size, blue_pawns_counter, red_pawns_counter, number_of_hexes);
+
+                    if (!pawns_check) return false; // the player used too many pawns, cannot win in n-moves
+
+                    return true; // the checked player can win in n-moves
+
+                }
+
+            }
+
+            // if nobody has won ...
+            else {
+
+                // clear the board back to the original state by removing a placed pawn
+                remove_pawn(hexes, possible_movement_coordinates_pair, red_pawns_counter, blue_pawns_counter);
+
+                delete used_coords->pop(); // remove the saved coord since they aren't the ones giving the player victory
+                delete possible_movement_coordinates_pair; // free memory
+
+            }
 
         }
 
-        // clear the board back to the original state
-        remove_pawn(hexes, board, possible_movement_coordinates_pair, red_pawns_counter, blue_pawns_counter, placed_red_pawns_counter, placed_blue_pawns_counter);
+        // if there are more moves to be made by a player ...
+        else {
 
-        // free memory
-        delete possible_movement_coordinates_pair;
+            // the opponent now has to "virtually" place their pawn
+            update_opponent_data(main_player, red_pawns_counter, blue_pawns_counter);
 
-        // if it's the main player's turn, update alpha
-        if (check_maximizing(main_player, current_player)) alpha = max(alpha, NEGATIVE_RESULT);
+            // the actual player has to place another pawn and check for victory
+            // if the player wins ...
+            if (bruteforce_traverse(hexes, size, number_of_hexes, red_pawns_counter, blue_pawns_counter, tree_depth - 1, main_player, number_of_empty_hexes - 1, used_coords)) {
 
-        // if it's the opponent's turn, update beta
-        else beta = min(beta, NEGATIVE_RESULT);
+                // remove the "virtual" pawn of the opponent
+                update_opponent_data(main_player, red_pawns_counter, blue_pawns_counter, true);
 
-        // if the opponent won ...
-        if (result == NEGATIVE_RESULT) {
+                // clear the board back to the original state by removing a placed pawn
+                remove_pawn(hexes, possible_movement_coordinates_pair, red_pawns_counter, blue_pawns_counter);
 
-            // apply alpha-beta pruning
-            if (beta <= alpha) break;
+                delete used_coords->pop(); // remove the saved coord since they aren't the ones giving the player victory
+                delete possible_movement_coordinates_pair; // free memory
+                possible_movement_coordinates->clear();
+                delete possible_movement_coordinates;
+
+                return true; // the checked player can win in n-moves
+
+            }
+
+            // clear the board back to the original state by removing a placed pawn
+            remove_pawn(hexes, possible_movement_coordinates_pair, red_pawns_counter, blue_pawns_counter);
+
+            delete used_coords->pop(); // remove the saved coord since they aren't the ones giving the player victory
+
+            // remove the "virtual" pawn of the opponent
+            update_opponent_data(main_player, red_pawns_counter, blue_pawns_counter, true);
 
         }
 
@@ -235,17 +249,15 @@ bool launch_board_generator(stack* hexes, int** board, const int size, int* red_
     possible_movement_coordinates->clear(); // free memory
     delete possible_movement_coordinates;
 
-    return false; // if nobody has won or the opponent player always has privilege, the checked player cannot win
+    return false; // the player hasn't won
 
 }
 
-bool check_can_player_win_in_n_moves(stack* hexes, int blue_pawns_counter, int red_pawns_counter, int number_of_hexes, int tree_depth, int main_player, int number_of_moves, bool perfect_opponent, bool print_the_result = false) {
+// this function checks base cases before launching moves generator and returns result of a request
+bool check_can_player_win_in_n_moves(int hexes[SIZE][SIZE], int blue_pawns_counter, int red_pawns_counter, int number_of_hexes, int tree_depth, int main_player, bool print_the_result = false) {
 
-    // if the board is not possible, immediately return from the function
-    if (!check_is_board_possible(hexes, &blue_pawns_counter, &red_pawns_counter, &number_of_hexes)) {
-        if (print_the_result) printf("NO\n");
-        return false;
-    }
+    // get the size of the board
+    const int size = get_board_size(number_of_hexes);
 
     // if the board has instant win, there is nothing to check here, immediately return from the function
     bool winner;
@@ -254,8 +266,11 @@ bool check_can_player_win_in_n_moves(stack* hexes, int blue_pawns_counter, int r
         return false;
     }
 
-    // get the size of the board
-    const int size = get_board_size(number_of_hexes);
+    // if the board is not possible, immediately return from the function
+    if (!check_is_board_possible(hexes, &blue_pawns_counter, &red_pawns_counter, &number_of_hexes)) {
+        if (print_the_result) printf("NO\n");
+        return false;
+    }
 
     // if the projected number of placed pawns of a player is way less than the minimal amount of pawns needed
     // to connect both sides of the board, immediately return from the function
@@ -264,25 +279,44 @@ bool check_can_player_win_in_n_moves(stack* hexes, int blue_pawns_counter, int r
         return false;
     }
 
-    // create an array representing the board
-    int **board = create_board(hexes, size);
+    // calculate the amount of empty hexes (the ones without a pawn)
+    // [ the variable defines how many possibilities there are on each level of the generated tree ]
+    const int number_of_empty_hexes = number_of_hexes - (red_pawns_counter + blue_pawns_counter);
 
-    // the tree depth has to be multiplied by two because there are *two* players placing the pawns
-    // it represents the total number of moves needed to be made from both players
-    tree_depth *= 2;
+    // determine the number of total moves needed to be made by both players
+    // if the program looks for the max result (i.e. checked player != current player), there are 4 moves, otherwise, 3
+    int total_moves;
+    (check_maximizing(main_player, determine_current_player(red_pawns_counter, blue_pawns_counter))) ? total_moves = maximizing_case_total_moves : total_moves = minimizing_case_total_moves;
 
-    // create added pawns counters for both players
-    int placed_red_pawns_counter = 0, placed_blue_pawns_counter = 0;
+    // if the player has only one move to make, decrement the total moves by 2
+    if (tree_depth == MINIMAL_TREE_DEPTH) total_moves -= one_move_total_moves_factor;
 
-    // create alpha and beta variables for the alpha-beta pruning
-    int alpha = ABSOLUTE_ALPHA;
-    int beta = ABSOLUTE_BETA;
+    // if there are more moves required to be made than empty hexes where the pawns can be put, the player cannot win
+    // in the specified amount of moves, immediately return from the program
+    if (total_moves > number_of_empty_hexes) {
+        if (print_the_result) printf("NO\n");
+        return false;
+    }
 
-    // check the possibility of winning for a desired player and store the result
-    bool result = launch_board_generator(hexes, board, size, &red_pawns_counter, &blue_pawns_counter, &number_of_hexes, tree_depth, main_player, perfect_opponent, number_of_moves, &placed_red_pawns_counter, &placed_blue_pawns_counter, alpha, beta);
+    // create a stack to store all the put hexes' coords
+    auto* used_coords = new stack;
 
-    // free memory
-    free_array(board, size);
+    // create a variable to store the result of the function
+    bool result;
+
+    // if the program looks for the max result (i.e. checked player != current player) ...
+    if (check_maximizing(main_player, determine_current_player(red_pawns_counter, blue_pawns_counter))) {
+
+        // the opponent has to make a move first
+        update_opponent_data(main_player, &red_pawns_counter, &blue_pawns_counter);
+
+    }
+
+    // launch bruteforce i.e. check if the player can win in n-moves
+    result = bruteforce_traverse(hexes, size, &number_of_hexes, &red_pawns_counter, &blue_pawns_counter, tree_depth, main_player, number_of_empty_hexes, used_coords);
+
+    used_coords->clear(); // free memory
+    delete used_coords;
 
     if (result) {
         if (print_the_result) printf("YES\n");

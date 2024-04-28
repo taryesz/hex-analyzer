@@ -5,13 +5,15 @@
 #define OFFSET_FROM_BOARD_EDGE 1
 #define NEIGHBOR_DISTANCE 1
 #define OUT_OF_BOUNDS_COORDINATE 0
-#define POSITIVE_RESULT 1
-#define NEGATIVE_RESULT 0
-#define NEUTRAL_RESULT 2
-#define LAST_TREE_LEVEL 1
-#define ABSOLUTE_ALPHA (-1)
-#define ABSOLUTE_BETA 3
 #define MIDDLE_BOARD_SYMBOLS_COUNT 3
+#define SIZE 11
+#define MINIMAL_TREE_DEPTH 1
+
+enum total_moves {
+    maximizing_case_total_moves = 4,
+    minimizing_case_total_moves = 3,
+    one_move_total_moves_factor = 2
+};
 
 enum visible_ascii_range {
     first_visible_ascii = 32,
@@ -48,5 +50,9 @@ enum query {
     can_red_win_in_2_moves_with_naive_opponent,
     can_blue_win_in_1_move_with_naive_opponent,
     can_blue_win_in_2_moves_with_naive_opponent,
+    can_red_win_in_1_move_with_perfect_opponent,
+    can_blue_win_in_1_move_with_perfect_opponent,
+    can_red_win_in_2_moves_with_perfect_opponent,
+    can_blue_win_in_2_moves_with_perfect_opponent,
     queries_quantity
 };

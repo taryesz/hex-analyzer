@@ -20,6 +20,10 @@ const char* get_query(int query_id) {
         case can_blue_win_in_1_move_with_naive_opponent: return "CAN_BLUE_WIN_IN_1_MOVE_WITH_NAIVE_OPPONENT";
         case can_red_win_in_2_moves_with_naive_opponent: return "CAN_RED_WIN_IN_2_MOVES_WITH_NAIVE_OPPONENT";
         case can_blue_win_in_2_moves_with_naive_opponent: return "CAN_BLUE_WIN_IN_2_MOVES_WITH_NAIVE_OPPONENT";
+        case can_red_win_in_1_move_with_perfect_opponent: return "CAN_RED_WIN_IN_1_MOVE_WITH_PERFECT_OPPONENT";
+        case can_blue_win_in_1_move_with_perfect_opponent: return "CAN_BLUE_WIN_IN_1_MOVE_WITH_PERFECT_OPPONENT";
+        case can_red_win_in_2_moves_with_perfect_opponent: return "CAN_RED_WIN_IN_2_MOVES_WITH_PERFECT_OPPONENT";
+        case can_blue_win_in_2_moves_with_perfect_opponent: return "CAN_BLUE_WIN_IN_2_MOVES_WITH_PERFECT_OPPONENT";
         default: return "";
     }
 
@@ -84,15 +88,10 @@ bool compare_queries(int symbol, int* query_id, int* symbol_id) {
 }
 
 // this function compares the input letters with the defined queries and executes one when detected
-void parse_query(stack* hexes, int symbol, int* query_id, int* symbol_id, const int* number_of_hexes, const int* red_pawns_counter, const int* blue_pawns_counter, bool* finished_board_parsing) {
+void parse_query(int hexes[SIZE][SIZE], int symbol, int* query_id, int* symbol_id, const int* number_of_hexes, const int* red_pawns_counter, const int* blue_pawns_counter, bool* finished_board_parsing) {
 
     // if the provided query exists in the program's list of queries ...
     if (compare_queries(symbol, query_id, symbol_id)) {
-
-        // update the last node's coords
-        // [ because it always has the wrong ones and should be changed by  *
-        // * taking the penultimate node's ones and incrementing Y-pos by 1 ]
-        update_last_node_coords(hexes);
 
         // set the flag to true since the program is no longer parsing the board and the respective variables have to
         // get reset for the next board
@@ -122,23 +121,23 @@ void parse_query(stack* hexes, int symbol, int* query_id, int* symbol_id, const 
                 break;
             }
             case can_red_win_in_1_move_with_naive_opponent: {
-                int tree_depth = 1, number_of_moves = 1, main_player = red_pawn_symbol;
-                check_can_player_win_in_n_moves(hexes, (int) *blue_pawns_counter, (int) *red_pawns_counter, (int) *number_of_hexes, tree_depth, main_player, number_of_moves, false, true);
+                int tree_depth = 1, main_player = red_pawn_symbol;
+                check_can_player_win_in_n_moves(hexes, (int) *blue_pawns_counter, (int) *red_pawns_counter, (int) *number_of_hexes, tree_depth, main_player, true);
                 break;
             }
             case can_red_win_in_2_moves_with_naive_opponent: {
-                int tree_depth = 2, number_of_moves = 2, main_player = red_pawn_symbol;
-                check_can_player_win_in_n_moves(hexes, (int) *blue_pawns_counter, (int) *red_pawns_counter, (int) *number_of_hexes, tree_depth, main_player, number_of_moves, false, true);
+                int tree_depth = 2, main_player = red_pawn_symbol;
+                check_can_player_win_in_n_moves(hexes, (int) *blue_pawns_counter, (int) *red_pawns_counter, (int) *number_of_hexes, tree_depth, main_player, true);
                 break;
             }
             case can_blue_win_in_1_move_with_naive_opponent: {
-                int tree_depth = 1, number_of_moves = 1, main_player = blue_pawn_symbol;
-                check_can_player_win_in_n_moves(hexes, (int) *blue_pawns_counter, (int) *red_pawns_counter, (int) *number_of_hexes, tree_depth, main_player, number_of_moves, false, true);
+                int tree_depth = 1, main_player = blue_pawn_symbol;
+                check_can_player_win_in_n_moves(hexes, (int) *blue_pawns_counter, (int) *red_pawns_counter, (int) *number_of_hexes, tree_depth, main_player,true);
                 break;
             }
             case can_blue_win_in_2_moves_with_naive_opponent: {
-                int tree_depth = 2, number_of_moves = 2, main_player = blue_pawn_symbol;
-                check_can_player_win_in_n_moves(hexes, (int) *blue_pawns_counter, (int) *red_pawns_counter, (int) *number_of_hexes, tree_depth, main_player, number_of_moves, false, true);
+                int tree_depth = 2, main_player = blue_pawn_symbol;
+                check_can_player_win_in_n_moves(hexes, (int) *blue_pawns_counter, (int) *red_pawns_counter, (int) *number_of_hexes, tree_depth, main_player, true);
                 break;
             }
             default:
