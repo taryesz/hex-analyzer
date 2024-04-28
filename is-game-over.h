@@ -66,8 +66,6 @@ bool find_connection(int** board, const int size, bool* winner, bool** visited_b
     // *** the axes are mirrored because the array is too ***
     const int edge_symbol_mark = 0;
 
-    // printf(">>> checking if the connecting path exists ... \n\n");
-
     // launch the board traversal looking for 'r' connecting the opposite board's sides
     for (int i = 0; i < size; i++) {
 
@@ -83,6 +81,7 @@ bool find_connection(int** board, const int size, bool* winner, bool** visited_b
 
     }
 
+    // otherwise the game is not over
     return false;
 
 }
@@ -101,9 +100,6 @@ bool check_is_game_over(stack* hexes, const int* blue_pawns_counter, const int* 
 
     // create an array representing the board
     int **board = create_board(hexes, size);
-
-    // create a flag that will indicate the winner (if any)
-    // bool winner;
 
     // create a dynamic size x size 2D-array of false's to keep track of visited elements:
 
@@ -127,14 +123,12 @@ bool check_is_game_over(stack* hexes, const int* blue_pawns_counter, const int* 
             printf("YES ");
             (*winner) ? printf("RED\n") : printf("BLUE\n"); // print who won the game
         }
-        // printf("CHECK: found a connecting path! \n\n");
         return true;
     }
 
     // if the result is negative, ( and if the program needs it printed, print it ) return false
     else {
         if (print_the_result) printf("NO\n");
-        // printf("CHECK: no connecting path was found ... \n\n");
         return false;
     }
 

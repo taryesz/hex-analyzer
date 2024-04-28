@@ -1,15 +1,9 @@
 #include <iostream>
-#include <math.h>
 #include "stack.h"
 #include "pawns.h"
 #include "queries.h"
+#include "middle-board-detector.h"
 #include "input.h"
-#include <fstream>
-//#include <regex>
-#include <chrono>
-#include <iomanip>
-using namespace std;
-
 
 int main() {
 
@@ -69,73 +63,7 @@ int main() {
 
     /* ---------------------------------------------------------------------------------------------------------- */
 
-    auto start = chrono::high_resolution_clock::now();
-
-    // unsync the I/O of C and C++.
-    ios_base::sync_with_stdio(false);
-
     launch_parser(hexes, middle_board_symbols, &number_of_hexes, &red_pawns_counter, &blue_pawns_counter, &empty_hexes_counter, &query_id, &symbol_id, &hexes_in_line_counter, &hexes_in_line, &level, &position_x, &position_y, &last_position_y, &finished_board_parsing, &pawn_detected, &middle_found_flag);
-
-    auto end = chrono::high_resolution_clock::now();
-
-    // Calculating total time taken by the program.
-    double time_taken = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
-
-    time_taken *= 1e-9;
-
-    cout << "Time taken by program is : " << fixed
-         << time_taken << setprecision(9);
-    cout << " sec" << endl;
-
-//    std::ifstream inFile("goluch.txt");
-//    std::ofstream outFile("temp.txt"); // Temporary file to store modified content
-//
-//    std::string line;
-//    int counter = 0;
-//
-//    while (std::getline(inFile, line)) {
-//        if (counter != 2) { // Keep the line if it's not the second line
-//            outFile << line << std::endl;
-//            //std::getline(inFile, line);
-//            //outFile << line << std::endl;
-//        }
-//        if (counter == 2) { // Reset counter after every two lines
-//            counter = 0;
-//        }
-//        ++counter;
-//    }
-//
-//    inFile.close();
-//    outFile.close();
-//
-//    // Remove the original file
-//    std::remove("goluch.txt");
-//
-//    // Rename the temporary file to the original file name
-//    std::rename("temp.txt", "goluch.txt");
-
-//    int line_number = 1570; // Specify the line number here
-//    std::fstream file("input.txt"); // Specify the input file name here
-//
-//    std::string line;
-//    int current_line_number = 1;
-//
-//    while (std::getline(file, line)) {
-//
-//        std::regex pattern("[^A-Z0-9_]");
-//
-//        if (!std::regex_search(line, pattern)) {
-//            current_line_number++;
-//        }
-//
-//        if (current_line_number == line_number) {
-//            file << "HERE\n";
-//            break;
-//        }
-//
-//    }
-//
-//    file.close();
 
     // free memory
     hexes->clear();

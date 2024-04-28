@@ -11,27 +11,25 @@
 #define LAST_TREE_LEVEL 1
 #define ABSOLUTE_ALPHA (-1)
 #define ABSOLUTE_BETA 3
-
-enum digit_ascii_range {
-    first_digit_ascii = 48,
-    final_digit_ascii = 57
-};
+#define MIDDLE_BOARD_SYMBOLS_COUNT 3
 
 enum visible_ascii_range {
     first_visible_ascii = 32,
     final_visible_ascii = 126
 };
 
-enum capital_letters_ascii_range {
+enum commands {
     first_capital_letter_ascii = 65,
     final_capital_letter_ascii = 90,
+    first_digit_ascii = 48,
+    final_digit_ascii = 57,
     underscore = '_'
 };
 
 enum board {
     hex_detection_symbol = '<',
     hex_finish_detection_symbol = '>',
-    default_symbol = '.',
+    empty_hex_symbol = '.',
     ignore_symbol = '-'
 };
 
@@ -46,18 +44,9 @@ enum query {
     is_board_correct,
     is_game_over,
     is_board_possible,
-
     can_red_win_in_1_move_with_naive_opponent,
     can_red_win_in_2_moves_with_naive_opponent,
-
-    can_red_win_in_1_move_with_perfect_opponent,
-    can_red_win_in_2_moves_with_perfect_opponent,
-
     can_blue_win_in_1_move_with_naive_opponent,
     can_blue_win_in_2_moves_with_naive_opponent,
-
-    can_blue_win_in_1_move_with_perfect_opponent,
-    can_blue_win_in_2_moves_with_perfect_opponent,
-
     queries_quantity
 };

@@ -1,28 +1,38 @@
 // this function searches for alternative paths i.e. if the winning player can win multiples times
 bool check_for_alternative_paths(int** board, bool** visited, const int size, bool* winner, int current_player) {
 
+    // iterate through the whole board
     for (int i = 0; i < size; i++) {
         for (int j = 0; j < size; j++) {
+
+            // if the current hex is visited ( i.e. is a part of the winning path ) ...
             if (visited[i][j]) {
 
-                board[i][j] = default_symbol;
+                // replace it with an empty hex ( i.e. do not consider this hex from now on )
+                board[i][j] = empty_hex_symbol;
+
+                // create separate arrays to store info about visited hexes of each color
                 bool **visited_blue_copy = create_array<bool>(size, true, false);
                 bool **visited_red_copy = create_array<bool>(size, true, false);
 
+                // if the connection between two opposite board edges hasn't been found with the hex replacement ...
                 if (!find_connection(board, size, winner, visited_blue_copy,visited_red_copy)) {
-                    free_array(visited_blue_copy, size);
+                    free_array(visited_blue_copy, size); // free memory
                     free_array(visited_red_copy, size);
-                    return true;
+                    return true; // the board can exist, since there is only one way for the player to connect the edges
                 }
-                else board[i][j] = current_player;
+                else board[i][j] = current_player; // otherwise, place the hex back and continue checking
 
-                free_array(visited_blue_copy, size);
+                free_array(visited_blue_copy, size); // free memory
                 free_array(visited_red_copy, size);
 
             }
         }
     }
 
+    // if the program has checked every hex from the winning path and after replacement of each node
+    // hasn't lost once, it means that the board cannot exist since there is always an alternative winning path
+    // that cannot exist according to the rules of Hex
     return false;
 
 }

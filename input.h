@@ -1,4 +1,4 @@
-// this function sets all crucial variables to the default values
+// this function sets all crucial variables to the default values for the next board to be parsed
 void reset_variables(stack* hexes, stack* middle_board_symbols, int *number_of_hexes, int* red_pawns_counter, int* blue_pawns_counter, int* empty_hexes_counter,int* query_id, int* symbol_id, int* hexes_in_line_counter, int* hexes_in_line, int* level, int* position_x, int* position_y, int* last_position_y, bool* finished_board_parsing, bool* pawn_detected, bool* middle_found_flag) {
 
     hexes->clear();
@@ -37,53 +37,18 @@ void launch_parser(stack* hexes, stack* middle_board_symbols, int *number_of_hex
         if (symbol >= first_visible_ascii && symbol <= final_visible_ascii) { // && symbol != ignore_symbol
 
             if (symbol == ignore_symbol) {
-
-                // TODO: THIS IS A PART OF MIDDLE-BOARD DETECTOR
-                // TODO: USE IT IN A SEPARATE FUNCTION
-                if (middle_board_symbols->get_head() && !(*middle_found_flag)) {
-                    int content = middle_board_symbols->get_head()->get_content();
-                    if ((content == hex_finish_detection_symbol || content == ignore_symbol) && middle_board_symbols->count() < 3) {
-                        middle_board_symbols->push(ignore_symbol, UNDEFINED, UNDEFINED);
-                    }
-                    else {
-                        middle_board_symbols->clear();
-                    }
-                }
-
+                // check if the middle of the board is being parsed
+                check_for_middle_board(middle_board_symbols, symbol, middle_found_flag);
             }
 
             // if the symbol is a '<', one more hex was found, which means the size is getting bigger
             else if (symbol == hex_detection_symbol) {
 
-                // TODO: THIS IS A PART OF MIDDLE-BOARD DETECTOR
-                // TODO: USE IT IN A SEPARATE FUNCTION
-                if (middle_board_symbols->get_head() && !(*middle_found_flag)) {
-                    int content = middle_board_symbols->get_head()->get_content();
-                    if (content == ignore_symbol) {
-                        if (middle_board_symbols->get_head()->get_next()) {
-                            content = middle_board_symbols->get_head()->get_next()->get_content();
-                            if (content == ignore_symbol) {
-                                if (middle_board_symbols->get_head()->get_next()->get_next()) {
-                                    content = middle_board_symbols->get_head()->get_next()->get_next()->get_content();
-                                    if (content == hex_finish_detection_symbol) {
-                                        middle_board_symbols->clear();
-                                        *middle_found_flag = true;
-                                    }
-                                    else middle_board_symbols->clear();
-                                }
-                                else middle_board_symbols->clear();
-                            }
-                            else middle_board_symbols->clear();
-                        }
-                        else middle_board_symbols->clear();
-                    }
-                    else middle_board_symbols->clear();
-                }
+                // check if the middle of the board is being parsed
+                check_for_middle_board(middle_board_symbols, symbol, middle_found_flag);
 
                 // if the parsing of a board is finished, reset the variables for the next one
-                if (*finished_board_parsing) {
-                    reset_variables(hexes, middle_board_symbols, number_of_hexes, red_pawns_counter, blue_pawns_counter, empty_hexes_counter, query_id, symbol_id, hexes_in_line_counter, hexes_in_line, level, position_x, position_y, last_position_y, finished_board_parsing, pawn_detected, middle_found_flag);
-                }
+                if (*finished_board_parsing) reset_variables(hexes, middle_board_symbols, number_of_hexes, red_pawns_counter, blue_pawns_counter, empty_hexes_counter, query_id, symbol_id, hexes_in_line_counter, hexes_in_line, level, position_x, position_y, last_position_y, finished_board_parsing, pawn_detected, middle_found_flag);
 
                 // increment the number of hexes: each '<' symbol means one hex
                 ++(*number_of_hexes);
@@ -93,19 +58,7 @@ void launch_parser(stack* hexes, stack* middle_board_symbols, int *number_of_hex
             // if the symbol is a '>', check if this hex is empty or not
             else if (symbol == hex_finish_detection_symbol) {
                 check_if_hex_empty(hexes, position_x, position_y, last_position_y, hexes_in_line_counter, hexes_in_line, level, empty_hexes_counter, pawn_detected, middle_found_flag);
-
-                // TODO: THIS IS A PART OF MIDDLE-BOARD DETECTOR
-                // TODO: USE IT IN A SEPARATE FUNCTION
-                if (!(*middle_found_flag)) {
-                    if (middle_board_symbols->get_head() == nullptr) {
-                        middle_board_symbols->push(hex_finish_detection_symbol, UNDEFINED, UNDEFINED);
-                    }
-                    else if (middle_board_symbols->get_head()->get_content() != ignore_symbol) {
-                        middle_board_symbols->push(hex_finish_detection_symbol, UNDEFINED, UNDEFINED);
-                    }
-                    else middle_board_symbols->clear();
-                }
-
+                check_for_middle_board(middle_board_symbols, symbol, middle_found_flag); // check if the middle of the board is being parsed
             }
 
             // if the symbol is a 'r', add the red pawn to the stack
@@ -129,6 +82,5 @@ void launch_parser(stack* hexes, stack* middle_board_symbols, int *number_of_hex
         else continue;
 
     }
-
 
 }

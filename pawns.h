@@ -62,7 +62,7 @@ bool parse_hex(stack* hexes, int* position_x, int* position_y, int* last_positio
     ++(*n_pawns_counter);
 
     // if the pushed symbol was an empty hex, no pawn was found
-    if (content == default_symbol) return false;
+    if (content == empty_hex_symbol) return false;
 
     // a pawn was found
     else return true;
@@ -73,7 +73,7 @@ bool parse_hex(stack* hexes, int* position_x, int* position_y, int* last_positio
 void check_if_hex_empty(stack* hexes, int* position_x, int* position_y, int* last_position_y, int* hexes_in_line_counter, int* hexes_in_line, int* level, int* empty_hexes_counter, bool* pawn_detected, bool* middle_found_flag) {
 
     // if no pawn was detected in the node, add a '.'
-    if (!(*pawn_detected)) *pawn_detected = parse_hex(hexes, position_x, position_y, last_position_y, hexes_in_line_counter, hexes_in_line, level, empty_hexes_counter, default_symbol, middle_found_flag);
+    if (!(*pawn_detected)) *pawn_detected = parse_hex(hexes, position_x, position_y, last_position_y, hexes_in_line_counter, hexes_in_line, level, empty_hexes_counter, empty_hex_symbol, middle_found_flag);
 
     // otherwise, a pawn was already inserted, don't do anything
     else *pawn_detected = false;

@@ -12,7 +12,7 @@ private:
 public:
 
     node() {
-        this->content = default_symbol;
+        this->content = empty_hex_symbol;
         this->position_x = UNDEFINED;
         this->position_y = UNDEFINED;
         this->next = nullptr;
