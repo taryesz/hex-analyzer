@@ -1,9 +1,8 @@
 #include <iostream>
-#include <cmath>
-#include "stack.h"
+#include "classes/stack.h"
 #include "pawns.h"
 #include "queries.h"
-#include "middle-board-detector.h"
+#include "queries/middle-board-detector.h"
 #include "input.h"
 
 int main() {

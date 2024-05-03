@@ -1,9 +1,9 @@
-#include "board-size.h"
-#include "pawns-number.h"
-#include "is-board-correct.h"
-#include "is-game-over.h"
-#include "is-board-possible.h"
-#include "can-player-win-in-n-moves.h"
+#include "queries/board-size.h"
+#include "queries/pawns-number.h"
+#include "queries/is-board-correct.h"
+#include "queries/is-game-over.h"
+#include "queries/is-board-possible.h"
+#include "queries/can-player-win-in-n-moves.h"
 
 // this function will store and return a query
 const char* get_query(int query_id) {
