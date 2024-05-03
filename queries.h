@@ -1,5 +1,3 @@
-#include "array.h"
- #include "board.h"
 #include "board-size.h"
 #include "pawns-number.h"
 #include "is-board-correct.h"
@@ -25,6 +23,7 @@ const char* get_query(int query_id) {
         case can_red_win_in_2_moves_with_perfect_opponent: return "CAN_RED_WIN_IN_2_MOVES_WITH_PERFECT_OPPONENT";
         case can_blue_win_in_2_moves_with_perfect_opponent: return "CAN_BLUE_WIN_IN_2_MOVES_WITH_PERFECT_OPPONENT";
         default: return "";
+
     }
 
 }
@@ -129,6 +128,7 @@ void parse_query(int hexes[SIZE][SIZE], int symbol, int* query_id, int* symbol_i
                 int tree_depth = 2, main_player = red_pawn_symbol;
                 check_can_player_win_in_n_moves(hexes, (int) *blue_pawns_counter, (int) *red_pawns_counter, (int) *number_of_hexes, tree_depth, main_player, true);
                 break;
+
             }
             case can_blue_win_in_1_move_with_naive_opponent: {
                 int tree_depth = 1, main_player = blue_pawn_symbol;
@@ -142,6 +142,7 @@ void parse_query(int hexes[SIZE][SIZE], int symbol, int* query_id, int* symbol_i
             }
             default:
                 break;
+
         }
 
         *query_id = 0;  // reset the ID for the next query comparison

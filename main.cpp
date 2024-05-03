@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cmath>
 #include "stack.h"
 #include "pawns.h"
 #include "queries.h"
@@ -64,9 +65,12 @@ int main() {
     // create variables that will store the lastly parsed pawn's coords
     int most_recent_x = 0, most_recent_y = 0;
 
+    // define the sequence of characters that mean the middle of the board
+    int characters[MIDDLE_BOARD_SYMBOLS_COUNT] = {'-', '-', '>'};
+
     /* ---------------------------------------------------------------------------------------------------------- */
 
-    launch_parser(hexes, middle_board_symbols, &number_of_hexes, &red_pawns_counter, &blue_pawns_counter, &empty_hexes_counter, &query_id, &symbol_id, &hexes_in_line_counter, &hexes_in_line, &level, &position_x, &position_y, &last_position_y, &finished_board_parsing, &pawn_detected, &middle_found_flag, &most_recent_x, &most_recent_y);
+    launch_parser(hexes, middle_board_symbols, &number_of_hexes, &red_pawns_counter, &blue_pawns_counter, &empty_hexes_counter, &query_id, &symbol_id, &hexes_in_line_counter, &hexes_in_line, &level, &position_x, &position_y, &last_position_y, &finished_board_parsing, &pawn_detected, &middle_found_flag, &most_recent_x, &most_recent_y, characters);
 
     // free memory
     middle_board_symbols->clear();

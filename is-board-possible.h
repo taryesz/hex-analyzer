@@ -28,7 +28,9 @@ bool check_for_alternative_paths(int hexes[SIZE][SIZE], bool visited[SIZE][SIZE]
                 else hexes[i][j] = current_player; // otherwise, place the hex back and continue checking
 
             }
+
         }
+
     }
 
     // if the program has checked every hex from the winning path and after replacement of each node
@@ -56,7 +58,7 @@ bool check_is_board_possible(int hexes[SIZE][SIZE], const int* blue_pawns_counte
     // get the board size
     const int size = get_board_size(*number_of_hexes);
 
-    // create a dynamic size x size 2D-array of false's to keep track of visited elements:
+    // create a size x size 2D-array of false's to keep track of visited elements:
 
     bool visited_blue[SIZE][SIZE], visited_red[SIZE][SIZE];
 

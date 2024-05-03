@@ -98,7 +98,7 @@ bool check_is_game_over(int hexes[SIZE][SIZE], const int* blue_pawns_counter, co
     // get the size of the board
     const int size = get_board_size(*number_of_hexes);
 
-    // create a dynamic size x size 2D-array of false's to keep track of visited elements:
+    // create a size x size 2D-array of false's to keep track of visited elements:
 
     bool visited_blue[SIZE][SIZE], visited_red[SIZE][SIZE];
 

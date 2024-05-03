@@ -1,6 +1,5 @@
 #include "define.h"
 
-
 class node {
 private:
 
@@ -11,43 +10,22 @@ private:
 
 public:
 
-    node() {
-        this->content = empty_hex_symbol;
-        this->position_x = UNDEFINED;
-        this->position_y = UNDEFINED;
-        this->next = nullptr;
-    }
+    node();
 
-    int get_content() const {
-        return content;
-    }
+    void set_content(int value);
 
-    void set_content(int value) {
-        content = value;
-    }
+    void set_position_x(int value);
 
-    int get_position_x() const {
-        return position_x;
-    }
+    void set_position_y(int value);
 
-    void set_position_x(int value) {
-        position_x = value;
-    }
+    void set_next(node* value);
 
-    int get_position_y() const {
-        return position_y;
-    }
+    [[nodiscard]] int get_content() const;
 
-    void set_position_y(int value) {
-        position_y = value;
-    }
+    [[nodiscard]] int get_position_x() const;
 
-    node* get_next() const {
-        return next;
-    }
+    [[nodiscard]] int get_position_y() const;
 
-    void set_next(node* value) {
-        next = value;
-    }
+    [[nodiscard]] node* get_next() const;
 
 };

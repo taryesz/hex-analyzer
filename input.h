@@ -21,7 +21,7 @@ void reset_variables(stack* middle_board_symbols, int *number_of_hexes, int* red
 }
 
 // this function handles the whole execution of the program, i.e. accepts input from a user and checks what it received
-void launch_parser(int hexes[SIZE][SIZE], stack* middle_board_symbols, int *number_of_hexes, int* red_pawns_counter, int* blue_pawns_counter, int* empty_hexes_counter,int* query_id, int* symbol_id, int* hexes_in_line_counter, int* hexes_in_line, int* level, int* position_x, int* position_y, int* last_position_y, bool* finished_board_parsing, bool* pawn_detected, bool* middle_found_flag, int* most_recent_x, int* most_recent_y) {
+void launch_parser(int hexes[SIZE][SIZE], stack* middle_board_symbols, int *number_of_hexes, int* red_pawns_counter, int* blue_pawns_counter, int* empty_hexes_counter,int* query_id, int* symbol_id, int* hexes_in_line_counter, int* hexes_in_line, int* level, int* position_x, int* position_y, int* last_position_y, bool* finished_board_parsing, bool* pawn_detected, bool* middle_found_flag, int* most_recent_x, int* most_recent_y, int characters[MIDDLE_BOARD_SYMBOLS_COUNT]) {
 
     // input characters
     while (true) {
@@ -37,14 +37,14 @@ void launch_parser(int hexes[SIZE][SIZE], stack* middle_board_symbols, int *numb
 
             if (symbol == ignore_symbol) {
                 // check if the middle of the board is being parsed
-                check_for_middle_board(middle_board_symbols, symbol, middle_found_flag);
+                check_for_middle_board(middle_board_symbols, symbol, middle_found_flag, characters);
             }
 
             // if the symbol is a '<', one more hex was found, which means the size is getting bigger
             else if (symbol == hex_detection_symbol) {
 
                 // check if the middle of the board is being parsed
-                check_for_middle_board(middle_board_symbols, symbol, middle_found_flag);
+                check_for_middle_board(middle_board_symbols, symbol, middle_found_flag, characters);
 
                 // if the parsing of a board is finished, reset the variables for the next one
                 if (*finished_board_parsing) reset_variables(middle_board_symbols, number_of_hexes, red_pawns_counter, blue_pawns_counter, empty_hexes_counter, query_id, symbol_id, hexes_in_line_counter, hexes_in_line, level, position_x, position_y, last_position_y, finished_board_parsing, pawn_detected, middle_found_flag);
@@ -57,7 +57,7 @@ void launch_parser(int hexes[SIZE][SIZE], stack* middle_board_symbols, int *numb
             // if the symbol is a '>', check if this hex is empty or not
             else if (symbol == hex_finish_detection_symbol) {
                 check_if_hex_empty(hexes, position_x, position_y, last_position_y, hexes_in_line_counter, hexes_in_line, level, empty_hexes_counter, pawn_detected, middle_found_flag, most_recent_x, most_recent_y);
-                check_for_middle_board(middle_board_symbols, symbol, middle_found_flag); // check if the middle of the board is being parsed
+                check_for_middle_board(middle_board_symbols, symbol, middle_found_flag, characters); // check if the middle of the board is being parsed
             }
 
             // if the symbol is a 'r', add the red pawn to the stack

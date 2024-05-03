@@ -61,10 +61,13 @@ bool check_if_can_win_in_less_moves(stack* used_coords, int hexes[SIZE][SIZE], c
                     hexes[k][l] = content;
 
                 }
+
             }
+
         }
 
         iterator = iterator->get_next();
+
     }
 
     return true;
@@ -88,7 +91,9 @@ auto* create_possible_movement_coordinates(int hexes[SIZE][SIZE], const int size
                 possible_movement_coordinates->push(UNDEFINED, i, j);
 
             }
+
         }
+
     }
 
     // return the coords
@@ -121,12 +126,14 @@ void place_pawn(int hexes[SIZE][SIZE], node* possible_movement_coordinates_pair,
     if (current_player == red_pawn_symbol) {
         ++(*red_pawns_counter);
         pawn = red_pawn_symbol;
+
     }
 
-    // otherwise the pawn is blue
+        // otherwise the pawn is blue
     else if (current_player == blue_pawn_symbol){
         ++(*blue_pawns_counter);
         pawn = blue_pawn_symbol;
+
     }
 
     // place the pawn onto the board
@@ -182,6 +189,7 @@ bool bruteforce_traverse(int hexes[SIZE][SIZE], const int size, int* number_of_h
                     remove_pawn(hexes, possible_movement_coordinates_pair, red_pawns_counter, blue_pawns_counter);
 
                     delete possible_movement_coordinates_pair; // free memory
+
                     possible_movement_coordinates->clear();
                     delete possible_movement_coordinates;
 
@@ -227,6 +235,7 @@ bool bruteforce_traverse(int hexes[SIZE][SIZE], const int size, int* number_of_h
 
                 delete used_coords->pop(); // remove the saved coord since they aren't the ones giving the player victory
                 delete possible_movement_coordinates_pair; // free memory
+
                 possible_movement_coordinates->clear();
                 delete possible_movement_coordinates;
 
@@ -241,6 +250,8 @@ bool bruteforce_traverse(int hexes[SIZE][SIZE], const int size, int* number_of_h
 
             // remove the "virtual" pawn of the opponent
             update_opponent_data(main_player, red_pawns_counter, blue_pawns_counter, true);
+
+            delete possible_movement_coordinates_pair;
 
         }
 

@@ -30,7 +30,7 @@ bool check_is_board_correct(int blue_pawns_counter, int red_pawns_counter, int n
         return true;
     }
 
-        // if the result is negative, ( and if the program needs it printed, print it ) return false
+    // if the result is negative, ( and if the program needs it printed, print it ) return false
     else {
         if (print_the_result) printf("NO\n");
         return false;
