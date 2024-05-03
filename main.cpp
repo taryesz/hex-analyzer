@@ -2,7 +2,7 @@
 #include "classes/stack.h"
 #include "pawns.h"
 #include "queries.h"
-#include "queries/middle-board-detector.h"
+#include "middle-board-detector.h"
 #include "input.h"
 
 int main() {
