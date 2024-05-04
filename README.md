@@ -1,5 +1,5 @@
 
-# RPN Calculator
+# Hex Analyzer
 
 This project is an implementation of the Hex analyzer. 
 
@@ -9,7 +9,7 @@ The user can provide the program with a board and then type various commands to 
 
 Let's say you have the following board:
 
-> <img width="200" alt="Screenshot 2024-05-03 at 10 50 59 PM" src="https://gist.github.com/assets/106448156/107ea2b9-f270-4030-a0ba-295d1364f4ae">
+> `![Hex board example of size 5x5](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAYoAAAEmCAYAAAB8oNeFAAAKrGlDQ1BJQ0MgUHJvZmlsZQAASImVlwdQU+kWgP9700NCSwhFSuhNegsgJYQWQOnVRkgChBJiICiIqMjiCqwoIiLYQFdFFFwLIKIiotgWBQv2BVkUlHWxICoq7wJD2N037715Z+bM+e6555z//)`
 
 ... and you want to find out its size.
 
@@ -17,7 +17,7 @@ To do that, input the board, and then type `BOARD_SIZE`
 
 _**First input**_
 
-> <img width="200" alt="Screenshot 2024-05-03 at 10 50 59 PM" src="https://gist.github.com/assets/106448156/107ea2b9-f270-4030-a0ba-295d1364f4ae">
+> `![Hex board example of size 5x5](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAYoAAAEmCAYAAAB8oNeFAAAKrGlDQ1BJQ0MgUHJvZmlsZQAASImVlwdQU+kWgP9700NCSwhFSuhNegsgJYQWQOnVRkgChBJiICiIqMjiCqwoIiLYQFdFFFwLIKIiotgWBQv2BVkUlHWxICoq7wJD2N037715Z+bM+e6555z//)`
 
 _**Second input**_
 
@@ -33,15 +33,15 @@ What if you want to find out whether it's possible to win the game as the Red pl
 
 _**First input**_
 
-> <img width="200" alt="Screenshot 2024-05-03 at 10 50 59 PM" src="https://gist.github.com/assets/106448156/107ea2b9-f270-4030-a0ba-295d1364f4ae">
+> `![Hex board example of size 5x5](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAYoAAAEmCAYAAAB8oNeFAAAKrGlDQ1BJQ0MgUHJvZmlsZQAASImVlwdQU+kWgP9700NCSwhFSuhNegsgJYQWQOnVRkgChBJiICiIqMjiCqwoIiLYQFdFFFwLIKIiotgWBQv2BVkUlHWxICoq7wJD2N037715Z+bM+e6555z//)`
 
 _**Second input**_
 
-> CAN_RED_WIN_IN_1_MOVE_WITH_NAIVE_OPPONENT
+> `CAN_RED_WIN_IN_1_MOVE_WITH_NAIVE_OPPONENT`
 
 _**Output:**_
 
-> NO
+> `NO`
 
 ## Running Tests
 
